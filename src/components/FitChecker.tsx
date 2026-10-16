@@ -222,6 +222,8 @@ export function FitChecker({ item }: { item: GarmentMeasures }) {
                 fontSize: 12.5,
                 padding: "6px 10px",
                 borderRadius: "var(--radius-sm)",
+                flexWrap: "wrap",
+                gap: "4px 8px",
                 background:
                   r.status === "good"
                     ? "var(--grade-a-bg)"
