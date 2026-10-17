@@ -298,15 +298,21 @@ p {
   gap: 24px;
 }
 
-.toplinks a {
+.toplinks a,
+.toplinks button {
   font-size: 13.5px;
   font-weight: 500;
   color: var(--ink-secondary);
   letter-spacing: 0.01em;
   transition: color 0.15s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
 }
 
-.toplinks a:hover {
+.toplinks a:hover,
+.toplinks button:hover {
   color: var(--ink);
 }
 

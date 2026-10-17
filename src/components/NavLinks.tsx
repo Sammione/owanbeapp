@@ -11,8 +11,27 @@ export function TopLinks({ signedIn, staff }: { signedIn: boolean; staff: boolea
       <Link href="/" className={on("/") ? "active" : ""}>Explore</Link>
       <Link href="/me" className={on("/me") ? "active" : ""}>My account</Link>
       {staff && <Link href="/hub" className={on("/hub") ? "active" : ""}>Hub</Link>}
-      <Link href="/list" className="btn small">List outfit or shoes</Link>
-      {!signedIn && <Link href="/login" className={on("/login") ? "active" : ""}>Sign in</Link>}
+      <Link href="/list" className="btn small">List item</Link>
+      {!signedIn ? (
+        <Link href="/login" className={on("/login") ? "active" : ""}>Sign in</Link>
+      ) : (
+        <form action="/auth/signout" method="post" style={{ display: "inline-flex", margin: 0, padding: 0 }}>
+          <button
+            type="submit"
+            style={{
+              background: "none",
+              border: "none",
+              color: "var(--ink-muted)",
+              cursor: "pointer",
+              font: "inherit",
+              fontSize: "0.88rem",
+              padding: "4px 8px",
+            }}
+          >
+            Sign out
+          </button>
+        </form>
+      )}
     </nav>
   );
 }
