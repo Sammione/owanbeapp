@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "./Icon";
+import { CartButton } from "./CartButton";
 
 export function TopLinks({ signedIn, staff }: { signedIn: boolean; staff: boolean }) {
   const path = usePathname();
@@ -12,6 +13,7 @@ export function TopLinks({ signedIn, staff }: { signedIn: boolean; staff: boolea
       <Link href="/me" className={on("/me") ? "active" : ""}>My account</Link>
       {staff && <Link href="/hub" className={on("/hub") ? "active" : ""}>Hub</Link>}
       <Link href="/list" className="btn small">List item</Link>
+      <CartButton />
       {!signedIn ? (
         <Link href="/login" className={on("/login") ? "active" : ""}>Sign in</Link>
       ) : (

@@ -293,6 +293,9 @@ export default async function ItemPage({
           {item.status === "live" && !isOwner ? (
             <BookingForm
               itemId={item.id}
+              title={item.title}
+              photos={item.photos}
+              sizeLabel={item.size_label}
               price={item.price}
               deposit={item.deposit}
               category={item.category}

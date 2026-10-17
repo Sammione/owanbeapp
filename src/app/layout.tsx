@@ -3,6 +3,9 @@ import Link from "next/link";
 import "./globals.css";
 import { BottomNav, TopLinks } from "@/components/NavLinks";
 import { getUserAndProfile } from "@/lib/auth";
+import { CartProvider } from "@/context/CartContext";
+import { CartDrawer } from "@/components/CartDrawer";
+import { CartButton } from "@/components/CartButton";
 
 export const metadata: Metadata = {
   title: "Owambe Closet – Luxury Traditional Attire Rental | Lagos",
@@ -35,27 +38,31 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       <body>
-        <div className="shell">
-          <header className="topbar">
-            <Link href="/" className="brand-logo" aria-label="Owambe Closet Home">
-              <span className="brand-name">OWAMBE CLOSET</span>
-              <span className="brand-dot">.</span>
-            </Link>
-
-            <TopLinks signedIn={!!user} staff={staff} />
-
-            {!user ? (
-              <Link href="/login" className="btn small ghost" data-mobile-only>
-                Sign in
+        <CartProvider>
+          <div className="shell">
+            <header className="topbar">
+              <Link href="/" className="brand-logo" aria-label="Owambe Closet Home">
+                <span className="brand-name">OWAMBE CLOSET</span>
+                <span className="brand-dot">.</span>
               </Link>
-            ) : (
-              <Link href="/me?tab=profile" className="btn small ghost" data-mobile-only>
-                Account
-              </Link>
-            )}
-          </header>
 
-          <main id="main-content">{children}</main>
+              <TopLinks signedIn={!!user} staff={staff} />
+
+              <div className="row g8" style={{ alignItems: "center" }} data-mobile-only>
+                <CartButton />
+                {!user ? (
+                  <Link href="/login" className="btn small ghost">
+                    Sign in
+                  </Link>
+                ) : (
+                  <Link href="/me?tab=profile" className="btn small ghost">
+                    Account
+                  </Link>
+                )}
+              </div>
+            </header>
+
+            <main id="main-content">{children}</main>
 
           <footer className="luxury-footer">
             <div className="footer-top">
@@ -112,7 +119,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </footer>
         </div>
 
-        <BottomNav staff={staff} />
+          <BottomNav staff={staff} />
+          <CartDrawer />
+        </CartProvider>
       </body>
     </html>
   );

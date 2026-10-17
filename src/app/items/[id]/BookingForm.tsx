@@ -11,10 +11,16 @@ import {
 import { addDays, naira, niceDate, todayISO } from "@/lib/format";
 import { defaultDeposit, overlaps } from "@/lib/pricing";
 
+import { useCart } from "@/context/CartContext";
+import { Icon } from "@/components/Icon";
+
 type Range = { start_date: string; end_date: string };
 
 export function BookingForm({
   itemId,
+  title,
+  photos,
+  sizeLabel,
   price,
   deposit,
   category,
@@ -23,6 +29,9 @@ export function BookingForm({
   signedIn,
 }: {
   itemId: string;
+  title?: string;
+  photos?: string[];
+  sizeLabel?: string | null;
   price: number;
   deposit: number;
   category?: string;
@@ -31,6 +40,7 @@ export function BookingForm({
   signedIn: boolean;
 }) {
   const router = useRouter();
+  const { addItem } = useCart();
   const minDate = addDays(todayISO(), 2); // at least 2 days' notice for checks and delivery
   const maxDate = addDays(todayISO(), 180); // up to 6 months ahead
   const [eventDate, setEventDate] = useState("");
@@ -200,6 +210,35 @@ export function BookingForm({
       </div>
 
       {error && <p className="error" role="alert">{error}</p>}
+
+      <button
+        type="button"
+        className="btn ghost block"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 8,
+          borderColor: "var(--border-strong)",
+          height: 46,
+          fontWeight: 600,
+        }}
+        onClick={() => {
+          addItem({
+            id: itemId,
+            title: title || "Celebration Item",
+            price,
+            deposit: dep,
+            category: category || "Attire",
+            photos: photos || [],
+            size_label: sizeLabel,
+            hub_area: hubName,
+          });
+        }}
+      >
+        <Icon name="bag" size={18} stroke={2} />
+        <span>Add to Event Basket</span>
+      </button>
 
       <div className="sticky-pay">
         <div className="stack">
