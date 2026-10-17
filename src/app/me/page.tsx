@@ -7,12 +7,18 @@ import { ItemCard } from "@/components/ItemCard";
 import { ProfileForm } from "./ProfileForm";
 import { BankSettingsForm } from "./BankSettingsForm";
 import { setListingStatus } from "./actions";
+import { PersonaSwitcher, type PersonaMode } from "@/components/PersonaSwitcher";
 
-const TABS = [
-  { key: "rentals", label: "My rentals" },
-  { key: "listings", label: "My listings" },
-  { key: "saved", label: "Saved" },
-  { key: "profile", label: "Profile & Payouts" },
+const RENTER_TABS = [
+  { key: "rentals", label: "My Rentals" },
+  { key: "saved", label: "Saved Outfits & Shoes" },
+  { key: "profile", label: "Account Profile" },
+] as const;
+
+const LENDER_TABS = [
+  { key: "listings", label: "My Wardrobe & Shoes" },
+  { key: "bank", label: "Payout Bank (NUBAN)" },
+  { key: "profile", label: "Partner Profile" },
 ] as const;
 
 const BOOKING_LABEL: Record<string, [string, string]> = {
@@ -33,10 +39,19 @@ const ITEM_LABEL: Record<string, [string, string]> = {
 type Rel<T> = T | T[] | null;
 const one = <T,>(r: Rel<T>) => (Array.isArray(r) ? r[0] ?? null : r);
 
-export default async function Me({ searchParams }: { searchParams: Promise<{ tab?: string; listed?: string }> }) {
+export default async function Me({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string; listed?: string; mode?: string }>;
+}) {
   const sp = await searchParams;
-  const tab = TABS.some((t) => t.key === sp.tab) ? sp.tab! : "rentals";
-  const { supabase, user, profile } = await requireUser(`/me?tab=${tab}`);
+  const isLender = sp.mode === "lender" || sp.tab === "listings" || sp.tab === "bank";
+  const activeMode: PersonaMode = isLender ? "lender" : "renter";
+  const activeTabs = isLender ? LENDER_TABS : RENTER_TABS;
+  const defaultTab = isLender ? "listings" : "rentals";
+
+  const tab = activeTabs.some((t) => t.key === sp.tab) ? sp.tab! : defaultTab;
+  const { supabase, user, profile } = await requireUser(`/me?mode=${activeMode}&tab=${tab}`);
 
   let body: React.ReactNode = null;
 
@@ -157,11 +172,25 @@ export default async function Me({ searchParams }: { searchParams: Promise<{ tab
     );
   }
 
+  if (tab === "bank") {
+    body = (
+      <div className="stack g20 narrow" style={{ maxWidth: 540, margin: 0 }}>
+        <div className="box" style={{ background: "rgba(212, 175, 55, 0.08)", borderColor: "rgba(212, 175, 55, 0.3)" }}>
+          <h3 style={{ margin: "0 0 6px" }}>Paystack NUBAN Payout Account</h3>
+          <p className="small muted">
+            Earnings (70% per rental) are automatically transferred to your verified Nigerian bank account after every clean return. Your bank details and identity are strictly private from renters.
+          </p>
+        </div>
+        <BankSettingsForm initialData={user.user_metadata} />
+      </div>
+    );
+  }
+
   if (tab === "profile") {
     body = (
       <div className="stack g20 narrow" style={{ maxWidth: 540, margin: 0 }}>
         <ProfileForm profile={profile ?? { full_name: null, phone: null, area: null }} email={user.email ?? ""} />
-        <BankSettingsForm initialData={user.user_metadata} />
+        {isLender && <BankSettingsForm initialData={user.user_metadata} />}
         <form action="/auth/signout" method="post"><button className="btn ghost block">Sign out</button></form>
       </div>
     );
@@ -169,14 +198,66 @@ export default async function Me({ searchParams }: { searchParams: Promise<{ tab
 
   return (
     <div className="container">
-      <h1>{profile?.full_name ? `Hi ${profile.full_name.split(" ")[0]}` : "My account"}</h1>
+      {profile && ["admin", "hub"].includes(profile.role) && (
+        <div
+          className="box"
+          style={{
+            background: "linear-gradient(135deg, rgba(212, 175, 55, 0.14) 0%, rgba(26, 26, 28, 0.95) 100%)",
+            borderColor: "var(--gold)",
+            color: "#fff",
+            marginBottom: 20,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: 12,
+            padding: "16px 20px",
+          }}
+        >
+          <div>
+            <div className="row g8" style={{ alignItems: "center", marginBottom: 4 }}>
+              <span className="pill ok" style={{ fontSize: "0.75rem", textTransform: "uppercase" }}>Admin Role Active</span>
+              <strong style={{ color: "var(--gold)", fontSize: "1.05rem" }}>Owambe Hub &amp; Operations Desk</strong>
+            </div>
+            <p className="small muted" style={{ margin: 0, color: "rgba(255,255,255,0.75)" }}>
+              You are signed in as an administrator. You can review pending listings, manage checkouts, and issue deposit refunds.
+            </p>
+          </div>
+          <Link href="/hub" className="btn small" style={{ background: "var(--gold)", color: "#111", fontWeight: 700 }}>
+            Enter Admin Hub Dashboard →
+          </Link>
+        </div>
+      )}
+
+      <PersonaSwitcher currentMode={activeMode} />
+
+      <div className="row between" style={{ alignItems: "baseline", marginBottom: 8 }}>
+        <h1>{profile?.full_name ? `Hi ${profile.full_name.split(" ")[0]}` : "My account"}</h1>
+        {isLender && (
+          <Link href="/list" className="btn small">
+            + List Outfit or Shoes
+          </Link>
+        )}
+      </div>
+
       <nav className="tabs" aria-label="Account sections">
-        {TABS.map((t) => (
-          <Link key={t.key} href={`/me?tab=${t.key}`} className={tab === t.key ? "on" : ""} aria-current={tab === t.key ? "page" : undefined}>{t.label}</Link>
+        {activeTabs.map((t) => (
+          <Link
+            key={t.key}
+            href={`/me?mode=${activeMode}&tab=${t.key}`}
+            className={tab === t.key ? "on" : ""}
+            aria-current={tab === t.key ? "page" : undefined}
+          >
+            {t.label}
+          </Link>
         ))}
       </nav>
+
       {!profile?.full_name && tab !== "profile" && (
-        <p className="notice">Add your name and WhatsApp number in <Link href="/me?tab=profile">Profile</Link> so we can reach you about pickups.</p>
+        <p className="notice">
+          Add your name and WhatsApp number in{" "}
+          <Link href={`/me?mode=${activeMode}&tab=profile`}>Profile</Link> so the hub can coordinate handovers privately.
+        </p>
       )}
       {body}
     </div>

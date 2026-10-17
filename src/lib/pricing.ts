@@ -1,4 +1,12 @@
-import { CLEANING_FEE, DELIVERY_FEE, OWNER_SHARE } from "./constants";
+import {
+  CLEANING_FEE,
+  DELIVERY_FEE,
+  TRUCK_DELIVERY_FEE,
+  OWNER_SHARE,
+  VENDOR_SHARE,
+  isEquipmentCategory,
+  isServiceCategory,
+} from "./constants";
 import { addDays } from "./format";
 
 export function defaultDeposit(price: number) {
@@ -9,11 +17,27 @@ export function lateFeePerDay(price: number) {
   return Math.max(1000, Math.round((price * 0.15) / 500) * 500);
 }
 
-export function quote(item: { price: number; deposit: number }, eventDate: string, delivery: boolean) {
+export function quote(
+  item: { price: number; deposit: number; category?: string },
+  eventDate: string,
+  delivery: boolean
+) {
+  const isEquipment = isEquipmentCategory(item.category);
+  const isService = isServiceCategory(item.category);
+
   const rental_fee = item.price;
-  const cleaning_fee = CLEANING_FEE;
-  const delivery_fee = delivery ? DELIVERY_FEE : 0;
-  const deposit = item.deposit > 0 ? item.deposit : defaultDeposit(item.price);
+  const cleaning_fee = isService ? 0 : CLEANING_FEE;
+  const delivery_fee = !delivery
+    ? 0
+    : isEquipment
+    ? TRUCK_DELIVERY_FEE
+    : isService
+    ? 0
+    : DELIVERY_FEE;
+
+  // Services use escrow and don't need a physical security deposit
+  const deposit = isService ? 0 : item.deposit > 0 ? item.deposit : defaultDeposit(item.price);
+
   return {
     start_date: addDays(eventDate, -1),
     end_date: addDays(eventDate, 1),

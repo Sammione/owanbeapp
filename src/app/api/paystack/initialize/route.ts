@@ -30,9 +30,9 @@ export async function POST(req: Request) {
   if (delivery && address.length < 8) return NextResponse.json({ error: "Add a delivery address." }, { status: 400 });
 
   const admin = createAdminClient();
-  const { data: item } = await admin.from("items").select("id,owner_id,title,price,deposit,status").eq("id", itemId).maybeSingle();
-  if (!item || item.status !== "live") return NextResponse.json({ error: "This outfit is not available right now." }, { status: 404 });
-  if (item.owner_id === user.id) return NextResponse.json({ error: "You can’t rent your own outfit." }, { status: 400 });
+  const { data: item } = await admin.from("items").select("id,owner_id,title,price,deposit,status,category").eq("id", itemId).maybeSingle();
+  if (!item || item.status !== "live") return NextResponse.json({ error: "This item is not available right now." }, { status: 404 });
+  if (item.owner_id === user.id) return NextResponse.json({ error: "You can’t rent your own item." }, { status: 400 });
 
   const q = quote(item, eventDate, delivery);
 

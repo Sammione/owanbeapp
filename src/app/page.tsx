@@ -2,19 +2,32 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ItemCard } from "@/components/ItemCard";
 import { Icon } from "@/components/Icon";
-import { AREAS, EVENTS, CATEGORIES, COLORS } from "@/lib/constants";
+import {
+  AREAS,
+  EVENTS,
+  CATEGORIES,
+  COLORS,
+  FASHION_CATEGORIES,
+  EQUIPMENT_CATEGORIES,
+  SERVICE_CATEGORIES,
+} from "@/lib/constants";
 
-type SP = Promise<{ q?: string; event?: string; grade?: string; area?: string; category?: string; color?: string }>;
+type SP = Promise<{
+  q?: string;
+  event?: string;
+  grade?: string;
+  area?: string;
+  category?: string;
+  color?: string;
+  pillar?: string;
+}>;
 
-const CATEGORY_LINKS = [
-  { name: "All Collections", query: "" },
-  { name: "Aso-ebi / Lace", query: "Aso-ebi / lace" },
-  { name: "Agbada", query: "Agbada" },
-  { name: "Gele", query: "Gele" },
-  { name: "Beads & Jewelry", query: "Beads & jewelry" },
-  { name: "Ankara", query: "Ankara" },
-  { name: "Accessories", query: "Accessories" },
-];
+const PILLARS = [
+  { id: "all", label: "All Rentals" },
+  { id: "fashion", label: "Attire & Footwear" },
+  { id: "equipment", label: "Event Equipment" },
+  { id: "services", label: "Catering & Services" },
+] as const;
 
 export default async function Home({ searchParams }: { searchParams: SP }) {
   const sp = await searchParams;
@@ -24,6 +37,9 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
   const area = AREAS.includes(sp.area as (typeof AREAS)[number]) ? sp.area! : "Ikotun";
   const category = CATEGORIES.includes(sp.category as (typeof CATEGORIES)[number]) ? sp.category! : "";
   const color = COLORS.find((c) => c.value === sp.color)?.value ?? "";
+  const pillar = (["all", "fashion", "equipment", "services"] as const).includes(sp.pillar as any)
+    ? sp.pillar!
+    : "";
 
   const supabase = await createClient();
   let query = supabase
@@ -76,6 +92,7 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
       ...(grade && { grade }),
       ...(category && { category }),
       ...(color && { color }),
+      ...(pillar && { pillar }),
       area,
       ...patch,
     });
@@ -83,8 +100,39 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
     return `/?${p.toString()}`;
   };
 
-  const isFiltered = !!(q || event || grade || category || color);
+  const isFiltered = !!(q || event || grade || category || color || pillar);
   const heroFeaturedItem = items.find((it) => it.photos && it.photos.length > 0) ?? items[0];
+
+  let activeCategoryLinks: { name: string; query: string }[] = [];
+  if (pillar === "equipment") {
+    activeCategoryLinks = [
+      { name: "All Equipment", query: "" },
+      ...EQUIPMENT_CATEGORIES.map((c) => ({ name: c, query: c })),
+    ];
+  } else if (pillar === "services") {
+    activeCategoryLinks = [
+      { name: "All Catering & Services", query: "" },
+      ...SERVICE_CATEGORIES.map((c) => ({ name: c, query: c })),
+    ];
+  } else if (pillar === "fashion") {
+    activeCategoryLinks = [
+      { name: "All Attire & Shoes", query: "" },
+      ...FASHION_CATEGORIES.map((c) => ({ name: c, query: c })),
+    ];
+  } else {
+    activeCategoryLinks = [
+      { name: "All Collections", query: "" },
+      { name: "Aso-ebi / Lace", query: "Aso-ebi / lace" },
+      { name: "Agbada", query: "Agbada" },
+      { name: "Shoes & Footwear", query: "Shoes & Footwear" },
+      { name: "Coolers & Ice Chests", query: "Coolers & Ice Chests" },
+      { name: "Cooking Pots & Burners", query: "Cooking Pots & Burners" },
+      { name: "Party Catering & Jollof", query: "Party Catering & Jollof" },
+      { name: "Chafing Dishes", query: "Chafing Dishes & Food Warmers" },
+      { name: "Canopies & Chairs", query: "Canopies, Tables & Chairs" },
+      { name: "Cocktails & Bar", query: "Cocktails & Drinks Bar" },
+    ];
+  }
 
   return (
     <div className="container">
@@ -92,42 +140,42 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
       {!isFiltered && (
         <section className="clean-hero">
           <div className="hero-text-block">
-            <span className="hero-kicker">Lagos Peer-to-Peer Wardrobe</span>
+            <span className="hero-kicker">Lagos One-Stop Event Marketplace</span>
 
             <h1 className="hero-heading">
-              Rent the look. <br />
-              <em>Skip the ₦150,000 price tag.</em>
+              Rent the Look, the Coolers <br />
+              <em>& the Feast for your Owambe.</em>
             </h1>
 
             <p className="hero-body">
-              A peer-to-peer wardrobe sharing marketplace for Lagos. Rent bespoke Aso-ebi, regal Agbada, pre-tied Gele, and royal coral beads from verified closets. Inspected, dry-cleaned, and picked up at partner tailor hubs in Ikotun, Egbeda, and Igando.
+              Everything for your Lagos celebration in one verified place. Rent bespoke Aso-ebi, Agbada, and designer footwear, plus heavy-duty beverage coolers, cast-iron cooking pots, and verified party caterers across Ikotun, Egbeda, and Igando.
             </p>
 
             <div className="hero-actions">
               <a href="#catalog" className="btn">
-                Browse Collections
+                Browse Event Essentials
               </a>
               <Link href="/list" className="btn ghost">
-                List Your Wardrobe (Earn 70%)
+                List Attire, Equipment or Services
               </Link>
             </div>
 
             <div className="hero-trust-bar">
               <div className="hero-trust-item">
-                <span className="check">✓</span>
+                <Icon name="shield" size={15} stroke={2} />
                 <span>Hub Inspected</span>
               </div>
               <div className="hero-trust-item">
-                <span className="check">✓</span>
-                <span>Dry-Cleaned</span>
+                <Icon name="truck" size={15} stroke={2} />
+                <span>Van &amp; Bike Logistics</span>
               </div>
               <div className="hero-trust-item">
-                <span className="check">✓</span>
-                <span>100% Refundable Deposit</span>
+                <Icon name="lock" size={15} stroke={2} />
+                <span>Paystack Escrow Protection</span>
               </div>
               <div className="hero-trust-item">
-                <span className="check">✓</span>
-                <span>Paystack Secured</span>
+                <Icon name="check" size={15} stroke={2.2} />
+                <span>Confidential Transactions</span>
               </div>
             </div>
           </div>
@@ -154,12 +202,12 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
         <form action="/" method="get" className="search-hub-row" role="search">
           <label className="search-input-box">
             <Icon name="search" size={18} stroke={1.8} />
-            <span className="sr">Search outfits</span>
+            <span className="sr">Search outfits, equipment or caterers</span>
             <input
               type="search"
               name="q"
               defaultValue={q}
-              placeholder="Search by fabric, style, or color (e.g. emerald lace, velvet agbada)…"
+              placeholder="Search attire, coolers, pots, caterers (e.g. 150L cooler, velvet agbada, party jollof)…"
             />
           </label>
 
@@ -179,15 +227,34 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
           {grade && <input type="hidden" name="grade" value={grade} />}
           {category && <input type="hidden" name="category" value={category} />}
           {color && <input type="hidden" name="color" value={color} />}
+          {pillar && <input type="hidden" name="pillar" value={pillar} />}
 
           <button type="submit" className="btn small" style={{ flex: "none" }}>
             Search
           </button>
         </form>
 
+        {/* 3 Pillars of Owambe Essentials */}
+        <div className="pillar-nav-bar" role="tablist" aria-label="Event Essentials Type">
+          {PILLARS.map((p) => {
+            const active = (pillar || "all") === p.id;
+            return (
+              <Link
+                key={p.id}
+                href={link({ pillar: p.id === "all" ? "" : p.id, category: "" })}
+                className={`pillar-pill-btn ${active ? "active" : ""}`}
+                role="tab"
+                aria-selected={active}
+              >
+                {p.label}
+              </Link>
+            );
+          })}
+        </div>
+
         {/* Category Navigation Links */}
         <nav className="category-nav-bar" aria-label="Collections">
-          {CATEGORY_LINKS.map((c) => {
+          {activeCategoryLinks.map((c) => {
             const active = category === c.query || (!category && c.query === "");
             return (
               <Link
@@ -201,31 +268,33 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
           })}
         </nav>
 
-        {/* Aso-Ebi Color Palette Swatches */}
-        <div className="color-swatches-row" aria-label="Filter by Aso-Ebi color code">
-          <span className="color-label-tag">Aso-Ebi Color:</span>
-          {COLORS.map((c) => {
-            const active = color === c.value;
-            return (
-              <Link
-                key={c.value}
-                href={link({ color: active ? "" : c.value })}
-                className={`swatch-chip ${active ? "active" : ""}`}
-                aria-pressed={active}
-                title={`Filter by ${c.name}`}
-              >
-                <span
-                  className="swatch-circle"
-                  style={{
-                    backgroundColor: c.hex,
-                    border: "border" in c && c.border ? "1px solid #D0D0CE" : undefined,
-                  }}
-                />
-                <span>{c.name}</span>
-              </Link>
-            );
-          })}
-        </div>
+        {/* Aso-Ebi Color Palette Swatches (shown for fashion & all) */}
+        {(!pillar || pillar === "fashion" || pillar === "all") && (
+          <div className="color-swatches-row" aria-label="Filter by Aso-Ebi color code">
+            <span className="color-label-tag">Aso-Ebi Color:</span>
+            {COLORS.map((c) => {
+              const active = color === c.value;
+              return (
+                <Link
+                  key={c.value}
+                  href={link({ color: active ? "" : c.value })}
+                  className={`swatch-chip ${active ? "active" : ""}`}
+                  aria-pressed={active}
+                  title={`Filter by ${c.name}`}
+                >
+                  <span
+                    className="swatch-circle"
+                    style={{
+                      backgroundColor: c.hex,
+                      border: "border" in c && c.border ? "1px solid #D0D0CE" : undefined,
+                    }}
+                  />
+                  <span>{c.name}</span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
 
         {/* Event & Condition Filters (Clean Text Pills) */}
         <div className="sub-filters-row" aria-label="Filter by event">

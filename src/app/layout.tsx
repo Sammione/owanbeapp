@@ -71,26 +71,32 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
               <div className="footer-cols">
                 <div className="footer-col">
-                  <h4>Collections</h4>
-                  <Link href="/?category=Aso-ebi+%2F+lace">Aso-ebi & Lace</Link>
-                  <Link href="/?category=Agbada">Regal Agbada</Link>
-                  <Link href="/?category=Gele">Auto-Gele</Link>
-                  <Link href="/?category=Beads+%26+jewelry">Royal Coral Beads</Link>
-                  <Link href="/?category=Ankara">Ankara Couture</Link>
+                  <h4>Attire & Footwear</h4>
+                  <Link href="/?pillar=fashion&category=Aso-ebi+%2F+lace">Aso-ebi & Lace</Link>
+                  <Link href="/?pillar=fashion&category=Agbada">Regal Agbada</Link>
+                  <Link href="/?pillar=fashion&category=Shoes+%26+Footwear">Shoes & Footwear</Link>
+                  <Link href="/?pillar=fashion&category=Gele">Auto-Gele & Beads</Link>
                 </div>
                 <div className="footer-col">
-                  <h4>Owners</h4>
-                  <Link href="/list">List an Outfit (Earn 70%)</Link>
-                  <Link href="/me?tab=listings">Manage Listings</Link>
-                  <Link href="/me?tab=rentals">Rental Payouts</Link>
-                  <Link href="/login">Hub Inquiries</Link>
+                  <h4>Equipment & Catering</h4>
+                  <Link href="/?pillar=equipment&category=Coolers+%26+Ice+Chests">Coolers & Ice Chests</Link>
+                  <Link href="/?pillar=equipment&category=Cooking+Pots+%26+Burners">Cast-Iron Party Pots</Link>
+                  <Link href="/?pillar=services&category=Party+Catering+%26+Jollof">Party Catering & Jollof</Link>
+                  <Link href="/?pillar=equipment&category=Chafing+Dishes+%26+Food+Warmers">Chafing Dishes</Link>
                 </div>
                 <div className="footer-col">
-                  <h4>Guarantees</h4>
-                  <p className="small muted">Tailor Quality Audit</p>
-                  <p className="small muted">Dry Cleaning Included</p>
-                  <p className="small muted">Paystack Automated Refund</p>
-                  <p className="small muted">Doorstep Delivery Option</p>
+                  <h4>Partners & Vendors</h4>
+                  <Link href="/list">List Attire or Shoes (70%)</Link>
+                  <Link href="/list">List Coolers & Pots (80%)</Link>
+                  <Link href="/vendors/register">Vendor & Caterer Onboarding</Link>
+                  <Link href="/me?mode=lender&tab=bank">Payout Bank Setup</Link>
+                </div>
+                <div className="footer-col">
+                  <h4>Platform Guarantees</h4>
+                  <p className="small muted">Hub Quality & Hygiene Audit</p>
+                  <p className="small muted">Heavy-Duty Van Delivery</p>
+                  <p className="small muted">Paystack Escrow Protection</p>
+                  <p className="small muted">100% Anonymous Transactions</p>
                 </div>
               </div>
             </div>

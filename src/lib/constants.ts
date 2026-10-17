@@ -1,12 +1,120 @@
 export const AREAS = ["Ikotun", "Egbeda", "Igando"] as const;
 export const EVENTS = ["Wedding", "Burial", "Birthday", "Naming", "Church", "Party"] as const;
 export const CATEGORIES = [
+  // Luxury Wardrobe & Footwear
   "Aso-ebi / lace",
   "Agbada",
   "Gele",
   "Beads & jewelry",
+  "Shoes & Footwear",
   "Ankara",
   "Accessories",
+  // Event Equipment & Hardware
+  "Coolers & Ice Chests",
+  "Cooking Pots & Burners",
+  "Chafing Dishes & Food Warmers",
+  "Canopies, Tables & Chairs",
+  "Generators & Sound Systems",
+  // Catering & Party Services
+  "Party Catering & Jollof",
+  "Small Chops & Finger Foods",
+  "Cocktails & Drinks Bar",
+  "Event Ushers & Protocol",
+] as const;
+
+export const EQUIPMENT_CATEGORIES = [
+  "Coolers & Ice Chests",
+  "Cooking Pots & Burners",
+  "Chafing Dishes & Food Warmers",
+  "Canopies, Tables & Chairs",
+  "Generators & Sound Systems",
+] as const;
+
+export const SERVICE_CATEGORIES = [
+  "Party Catering & Jollof",
+  "Small Chops & Finger Foods",
+  "Cocktails & Drinks Bar",
+  "Event Ushers & Protocol",
+] as const;
+
+export const FASHION_CATEGORIES = [
+  "Aso-ebi / lace",
+  "Agbada",
+  "Gele",
+  "Beads & jewelry",
+  "Shoes & Footwear",
+  "Ankara",
+  "Accessories",
+] as const;
+
+export const EQUIPMENT_CAPACITIES = [
+  "50L Beverage Cooler (50-70 drinks)",
+  "100L Party Cooler (100-140 drinks)",
+  "150L Industrial Chest (150-200 drinks + 4 ice bags)",
+  "Size 30 Cooking Pot (Serves 60-80)",
+  "Size 40 Cooking Pot (Serves 120-150)",
+  "Size 50 Giant Cast-Iron Pot (Serves 250+)",
+  "Single Roll-Top Chafing Dish",
+  "Set of 4 Chafing Dishes (Complete Buffet)",
+  "10 Chiavari Chairs Set",
+  "50 Banquet Chairs + 5 Large Tables",
+  "Standard 10x10 Event Canopy",
+  "3.5kVA Generator (Sound & Fans)",
+  "Party PA Speaker + Dual Mics",
+] as const;
+
+export const CATERING_CAPACITIES = [
+  "Intimate Gathering (30 - 50 Guests)",
+  "Standard Owambe (80 - 120 Guests)",
+  "Grand Reception (150 - 250 Guests)",
+  "Mega Celebration (300+ Guests)",
+] as const;
+
+export function isEquipmentCategory(category?: string | null): boolean {
+  if (!category) return false;
+  return (EQUIPMENT_CATEGORIES as readonly string[]).includes(category);
+}
+
+export function isServiceCategory(category?: string | null): boolean {
+  if (!category) return false;
+  return (SERVICE_CATEGORIES as readonly string[]).includes(category);
+}
+
+export function isFashionCategory(category?: string | null): boolean {
+  if (!category) return true;
+  return (FASHION_CATEGORIES as readonly string[]).includes(category);
+}
+
+export const EU_SHOE_SIZES = [
+  "EU 36 (UK 3)",
+  "EU 37 (UK 4)",
+  "EU 38 (UK 5)",
+  "EU 39 (UK 6)",
+  "EU 40 (UK 6.5)",
+  "EU 41 (UK 7)",
+  "EU 42 (UK 8)",
+  "EU 43 (UK 9)",
+  "EU 44 (UK 10)",
+  "EU 45 (UK 11)",
+  "EU 46 (UK 12)",
+] as const;
+
+export const HEEL_HEIGHTS = [
+  "Flat (0 - 1 in)",
+  "Low Heel (1.5 - 2 in)",
+  "Mid Heel (2.5 - 3.5 in)",
+  "High Stiletto (4+ in)",
+  "Platform / Wedge",
+  "Men's Flat Sole / Loafer",
+] as const;
+
+export const FOOTWEAR_STYLES = [
+  "Women's Embellished Stilettos",
+  "Women's Block Heel Sandals",
+  "Women's Regal Mules / Slippers",
+  "Men's Velvet Slip-on Loafers",
+  "Men's Traditional Leather Half-Shoes",
+  "Beaded Traditional Slippers",
 ] as const;
 
 export const COLORS = [
@@ -23,7 +131,9 @@ export const COLORS = [
 
 export const CLEANING_FEE = 2000;
 export const DELIVERY_FEE = 2500;
+export const TRUCK_DELIVERY_FEE = 8000;
 export const OWNER_SHARE = 0.7;
+export const VENDOR_SHARE = 0.8;
 /** Days the renter keeps the item: the day before, the event day, the day after. */
 export const RENTAL_DAYS = 3;
 /** Days after return the item is blocked for cleaning and inspection. */

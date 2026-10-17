@@ -15,6 +15,11 @@ const PATHS: Record<string, string> = {
   hub: '<path d="M3 21h18M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/>',
   lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
   ruler: '<path d="M21.3 8.7l-6-6a1 1 0 0 0-1.4 0l-11 11a1 1 0 0 0 0 1.4l6 6a1 1 0 0 0 1.4 0l11-11a1 1 0 0 0 0-1.4zM7.5 17.5l-2-2m3.5.5l-2-2m3.5.5l-2-2m3.5.5l-2-2m3.5.5l-2-2"/>',
+  shoe: '<path d="M3 17h18v-2c0-2.5-2.2-4.5-5.5-4.5h-3.5L9 8H3v9z"/><path d="M3 17v3h3v-3M18 17v3h3v-3"/>',
+  refresh: '<path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/>',
+  pot: '<path d="M4 11h16v7a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-7z"/><path d="M2 11h20M7 8a5 5 0 0 1 10 0M10 5h4"/>',
+  utensils: '<path d="M18 2v6a3 3 0 0 1-3 3v11M6 2v10a3 3 0 0 0 3 3v7M6 6h6"/>',
+  box: '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',
 };
 
 export function Icon({ name, size = 20, stroke = 2, filled = false }: { name: keyof typeof PATHS | string; size?: number; stroke?: number; filled?: boolean }) {

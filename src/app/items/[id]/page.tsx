@@ -111,22 +111,29 @@ export default async function ItemPage({
             </div>
           </div>
 
-          {/* Owner & Hub Card */}
+          {/* Verified Anonymous Partner & Hub Card */}
           <div className="partner-hub-card">
-            <div className="hub-avatar-circle">
-              {(owner?.first_name ?? "O").slice(0, 1).toUpperCase()}
+            <div className="hub-avatar-circle" style={{ background: "rgba(212, 175, 55, 0.12)", color: "#D4AF37", border: "1px solid rgba(212, 175, 55, 0.3)" }}>
+              <Icon name="shield" size={18} stroke={2.2} />
             </div>
             <div className="stack" style={{ flex: 1 }}>
-              <strong className="small">
-                Listed by {isOwner ? "You" : `${owner?.first_name ?? "Verified Owner"} in ${owner?.area ?? "Lagos"}`}
-              </strong>
+              <div className="row g6" style={{ alignItems: "center" }}>
+                <strong className="small">
+                  {isOwner ? "Your Listing (Private Wardrobe)" : "Verified Owambe Partner · Lagos"}
+                </strong>
+              </div>
               <span className="muted tiny">
-                {hub ? `Handover & return at ${hub.name} (${hub.area})` : "Pickup hub assigned upon booking"}
+                {hub ? `Intermediated & sanitized at ${hub.name} (${hub.area})` : "Handover managed via verified partner hub"}
               </span>
+              {!isOwner && (
+                <span className="tiny" style={{ color: "var(--accent, #D4AF37)", opacity: 0.9 }}>
+                  Verified anonymous transaction · Zero direct party contact
+                </span>
+              )}
             </div>
             {item.size_label && (
               <span className="pill">
-                Size {item.size_label}
+                {item.category === "Shoes & Footwear" ? item.size_label : `Size ${item.size_label}`}
               </span>
             )}
           </div>
@@ -135,10 +142,10 @@ export default async function ItemPage({
           {item.grade && (
             <div className="tailor-quality-card">
               <div className="tqc-title">
-                <span>Tailor Hub Audit: {GRADES[item.grade].label}</span>
+                <span>{item.category === "Shoes & Footwear" ? "Hub Footwear Audit" : "Tailor Hub Audit"}: {GRADES[item.grade].label}</span>
               </div>
               <p className="tqc-desc">
-                {GRADES[item.grade].note} Inspected by professional tailors.
+                {GRADES[item.grade].note} Inspected by professional staff.
                 {item.cleaned_at && ` Hospital-grade sanitized on ${niceDate(item.cleaned_at)}.`}
               </p>
             </div>
@@ -158,8 +165,103 @@ export default async function ItemPage({
             </div>
           )}
 
-          {/* Tailor Measurements */}
-          {measures.length > 0 && (
+          {/* Footwear & Fit Specifications */}
+          {item.category === "Shoes & Footwear" && (
+            <div className="measurement-box">
+              <div className="row between">
+                <div className="row g8" style={{ alignItems: "center" }}>
+                  <Icon name="shoe" size={20} stroke={2} />
+                  <h3 style={{ margin: 0 }}>Footwear Specifications</h3>
+                </div>
+                <span className="tiny muted">Audited Fit</span>
+              </div>
+              <div className="grid2" style={{ gap: 10, marginTop: 10 }}>
+                <div className="field box" style={{ padding: 12 }}>
+                  <span className="tiny muted">Shoe Size</span>
+                  <strong style={{ fontSize: 16 }}>{item.size_label?.split("·")[0]?.trim() || item.size_label || "Standard"}</strong>
+                </div>
+                <div className="field box" style={{ padding: 12 }}>
+                  <span className="tiny muted">Heel / Sole Height</span>
+                  <strong style={{ fontSize: 16 }}>{item.size_label?.split("·")[1]?.trim() || "Event Standard"}</strong>
+                </div>
+              </div>
+              <div className="tailor-quality-card" style={{ marginTop: 10, background: "rgba(255, 255, 255, 0.03)" }}>
+                <div className="tqc-title">
+                  <span>Footwear Hygiene & Sole Check</span>
+                </div>
+                <p className="tqc-desc">
+                  Soles, heel tips, and inner footbeds inspected by hub specialists. Hospital-grade UV sanitized and delivered with protective dustbag.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Equipment Specifications (Coolers, Pots, Warmers, Chairs) */}
+          {(["Coolers & Ice Chests", "Cooking Pots & Burners", "Chafing Dishes & Food Warmers", "Canopies, Tables & Chairs", "Generators & Sound Systems"] as const).includes(item.category as any) && (
+            <div className="measurement-box">
+              <div className="row between">
+                <div className="row g8" style={{ alignItems: "center" }}>
+                  <Icon name="box" size={20} stroke={2} />
+                  <h3 style={{ margin: 0 }}>Equipment Specifications</h3>
+                </div>
+                <span className="tiny muted">Audited Hardware</span>
+              </div>
+              <div className="grid2" style={{ gap: 10, marginTop: 10 }}>
+                <div className="field box" style={{ padding: 12 }}>
+                  <span className="tiny muted">Capacity / Volume</span>
+                  <strong style={{ fontSize: 16 }}>{item.size_label || "Industrial Standard"}</strong>
+                </div>
+                <div className="field box" style={{ padding: 12 }}>
+                  <span className="tiny muted">Fleet Condition</span>
+                  <strong style={{ fontSize: 16 }}>Grade {item.grade ?? "A"} · Fully Tested</strong>
+                </div>
+              </div>
+              <div className="tailor-quality-card" style={{ marginTop: 10, background: "rgba(255, 255, 255, 0.03)" }}>
+                <div className="tqc-title">
+                  <span>Hygiene, Burner & Seal Inspection</span>
+                </div>
+                <p className="tqc-desc">
+                  Oil-free degreased, pressure-tested seals and valves, and UV sanitized before dispatch. Delivered in ready-to-use condition.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Catering & Event Service Specifications */}
+          {(["Party Catering & Jollof", "Small Chops & Finger Foods", "Cocktails & Drinks Bar", "Event Ushers & Protocol"] as const).includes(item.category as any) && (
+            <div className="measurement-box">
+              <div className="row between">
+                <div className="row g8" style={{ alignItems: "center" }}>
+                  <Icon name="utensils" size={20} stroke={2} />
+                  <h3 style={{ margin: 0 }}>Service Package Details</h3>
+                </div>
+                <span className="tiny" style={{ color: "var(--grade-a, #165337)", fontWeight: 600 }}>Verified Caterer / Vendor</span>
+              </div>
+              <div className="grid2" style={{ gap: 10, marginTop: 10 }}>
+                <div className="field box" style={{ padding: 12 }}>
+                  <span className="tiny muted">Guest Capacity</span>
+                  <strong style={{ fontSize: 16 }}>{item.size_label || "100 Guests Standard"}</strong>
+                </div>
+                <div className="field box" style={{ padding: 12 }}>
+                  <span className="tiny muted">On-Site Arrival</span>
+                  <strong style={{ fontSize: 16 }}>2 Hours Before Event</strong>
+                </div>
+              </div>
+              <div className="tailor-quality-card" style={{ marginTop: 10, background: "rgba(22, 83, 55, 0.08)", borderColor: "rgba(22, 83, 55, 0.2)" }}>
+                <div className="tqc-title">
+                  <span style={{ color: "var(--grade-a, #165337)" }}>Paystack Escrow Protection</span>
+                </div>
+                <p className="tqc-desc" style={{ color: "var(--ink-secondary)" }}>
+                  Your payment is safely held by Owambe Closet. The caterer / vendor is only paid after your event is successfully delivered to your satisfaction.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Tailor Measurements for Garments */}
+          {item.category !== "Shoes & Footwear" &&
+            !(["Coolers & Ice Chests", "Cooking Pots & Burners", "Chafing Dishes & Food Warmers", "Canopies, Tables & Chairs", "Generators & Sound Systems", "Party Catering & Jollof", "Small Chops & Finger Foods", "Cocktails & Drinks Bar", "Event Ushers & Protocol"] as const).includes(item.category as any) &&
+            measures.length > 0 && (
             <div className="measurement-box">
               <div className="row between">
                 <h3>Tailor Measurements</h3>
@@ -181,8 +283,9 @@ export default async function ItemPage({
             </div>
           )}
 
-          {/* Interactive "Will It Fit Me?" Fit Checker */}
-          {(item.bust || item.waist || item.hip) && (
+          {/* Interactive "Will It Fit Me?" Fit Checker (Garments only) */}
+          {!(["Coolers & Ice Chests", "Cooking Pots & Burners", "Chafing Dishes & Food Warmers", "Canopies, Tables & Chairs", "Generators & Sound Systems", "Party Catering & Jollof", "Small Chops & Finger Foods", "Cocktails & Drinks Bar", "Event Ushers & Protocol", "Shoes & Footwear"] as const).includes(item.category as any) &&
+            (item.bust || item.waist || item.hip) && (
             <FitChecker item={item} />
           )}
 
@@ -192,6 +295,7 @@ export default async function ItemPage({
               itemId={item.id}
               price={item.price}
               deposit={item.deposit}
+              category={item.category}
               hubName={hub?.name ?? "the neighborhood hub"}
               busy={(busy ?? []) as { start_date: string; end_date: string }[]}
               signedIn={!!user}
@@ -208,22 +312,28 @@ export default async function ItemPage({
 
           {/* Trust Footnotes */}
           <div className="stack g8 small muted" style={{ paddingTop: 8 }}>
-            <div className="row g8">
-              <span>✓</span>
+            <div className="row g8" style={{ alignItems: "flex-start" }}>
+              <span style={{ color: "var(--grade-a)", marginTop: 2 }}>
+                <Icon name="check" size={14} stroke={2.5} />
+              </span>
               <span>
-                <strong>100% Refundable Security Deposit:</strong> Returned within 24 hours of returning the garment.
+                <strong>Refundable Security Deposit:</strong> Returned within 24 hours of item inspection.
               </span>
             </div>
-            <div className="row g8">
-              <span>✓</span>
+            <div className="row g8" style={{ alignItems: "flex-start" }}>
+              <span style={{ color: "var(--grade-a)", marginTop: 2 }}>
+                <Icon name="check" size={14} stroke={2.5} />
+              </span>
               <span>
-                <strong>Professional Dry Cleaning Included:</strong> We sanitize every piece between rentals.
+                <strong>Professional Sanitization Included:</strong> Cleaned and audited between rentals.
               </span>
             </div>
-            <div className="row g8">
-              <span>✓</span>
+            <div className="row g8" style={{ alignItems: "flex-start" }}>
+              <span style={{ color: "var(--grade-a)", marginTop: 2 }}>
+                <Icon name="check" size={14} stroke={2.5} />
+              </span>
               <span>
-                <strong>Paystack Secured:</strong> Card, transfer or USSD.
+                <strong>Paystack Secured:</strong> Instant card, bank transfer or USSD.
               </span>
             </div>
           </div>

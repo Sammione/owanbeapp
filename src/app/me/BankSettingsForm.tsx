@@ -2,6 +2,7 @@
 import { useEffect, useState, useActionState } from "react";
 import { saveBankDetails } from "./actions";
 import { FALLBACK_NIGERIAN_BANKS } from "@/lib/constants";
+import { Icon } from "@/components/Icon";
 
 type Bank = { name: string; code: string };
 
@@ -143,7 +144,7 @@ export function BankSettingsForm({ initialData }: { initialData?: BankData }) {
             className="notice ok"
             style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px" }}
           >
-            <span style={{ fontSize: 18 }}>✓</span>
+            <Icon name="check" size={16} stroke={2.5} />
             <div className="stack">
               <span className="tiny" style={{ textTransform: "uppercase", letterSpacing: "0.05em", opacity: 0.8 }}>
                 Verified Account Name

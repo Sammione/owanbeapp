@@ -52,9 +52,11 @@ create table if not exists public.items (
   owner_id         uuid not null references public.profiles(id) on delete cascade,
   hub_id           uuid references public.hubs(id),
   title            text not null check (char_length(title) between 3 and 90),
-  description      text check (char_length(description) <= 600),
-  category         text not null check (category in ('Aso-ebi / lace','Agbada','Gele','Beads & jewelry','Ankara','Accessories')),
-  events           text[] not null default '{}',
+  category         text not null check (category in (
+    'Aso-ebi / lace','Agbada','Gele','Beads & jewelry','Shoes & Footwear','Ankara','Accessories',
+    'Coolers & Ice Chests','Cooking Pots & Burners','Chafing Dishes & Food Warmers','Canopies, Tables & Chairs','Generators & Sound Systems',
+    'Party Catering & Jollof','Small Chops & Finger Foods','Cocktails & Drinks Bar','Event Ushers & Protocol'
+  )),
   size_label       text,
   -- measurements in inches; null when not applicable (e.g. beads)
   bust             numeric(5,1),

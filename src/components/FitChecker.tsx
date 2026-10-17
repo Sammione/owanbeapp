@@ -245,7 +245,7 @@ export function FitChecker({ item }: { item: GarmentMeasures }) {
 
           {allGood && (
             <p className="tiny" style={{ color: "var(--grade-a)", fontWeight: 600 }}>
-              ✓ Recommended! This look is an ideal match for your measurements.
+              Recommended Fit: Garment proportions align with your recorded measurements.
             </p>
           )}
 

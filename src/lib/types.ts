@@ -1,4 +1,5 @@
 export type Grade = "A" | "B" | "C";
+export type ItemType = "garment" | "equipment" | "service";
 
 export type Item = {
   id: string;
@@ -7,6 +8,9 @@ export type Item = {
   title: string;
   description: string | null;
   category: string;
+  item_type?: ItemType | null;
+  capacity?: string | null;
+  quantity?: number | null;
   events: string[];
   size_label: string | null;
   bust: number | null;
@@ -25,6 +29,16 @@ export type Item = {
   cleaned_at: string | null;
   tag_code: string | null;
   created_at: string;
+};
+
+export type VendorProfile = {
+  id: string;
+  full_name: string | null;
+  phone: string | null;
+  area: string | null;
+  business_name?: string | null;
+  vendor_type?: "tailor" | "equipment_rental" | "caterer" | "drinks" | "event_services" | null;
+  verified_vendor?: boolean;
 };
 
 export type Hub = { id: string; name: string; area: string; address: string | null; phone: string | null };

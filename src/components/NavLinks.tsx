@@ -9,9 +9,9 @@ export function TopLinks({ signedIn, staff }: { signedIn: boolean; staff: boolea
   return (
     <nav className="toplinks" aria-label="Main">
       <Link href="/" className={on("/") ? "active" : ""}>Explore</Link>
-      <Link href="/me?tab=saved" className={on("/me") ? "active" : ""}>My account</Link>
+      <Link href="/me" className={on("/me") ? "active" : ""}>My account</Link>
       {staff && <Link href="/hub" className={on("/hub") ? "active" : ""}>Hub</Link>}
-      <Link href="/list" className="btn small">List an outfit</Link>
+      <Link href="/list" className="btn small">List outfit or shoes</Link>
       {!signedIn && <Link href="/login" className={on("/login") ? "active" : ""}>Sign in</Link>}
     </nav>
   );
@@ -21,18 +21,18 @@ export function BottomNav({ staff }: { staff: boolean }) {
   const path = usePathname();
   const items = [
     { href: "/", label: "Explore", icon: "explore", match: (p: string) => p === "/" || p.startsWith("/items") },
-    { href: "/me?tab=saved", label: "Saved", icon: "heart", match: () => false },
+    { href: "/me?mode=renter&tab=saved", label: "Saved", icon: "heart", match: () => false },
     { href: "/list", label: "List", icon: "plus", plus: true, match: (p: string) => p.startsWith("/list") },
-    { href: "/me?tab=rentals", label: "Rentals", icon: "cal", match: (p: string) => p.startsWith("/me") || p.startsWith("/bookings") },
+    { href: "/me?mode=renter&tab=rentals", label: "Rentals", icon: "cal", match: (p: string) => p.startsWith("/me") || p.startsWith("/bookings") },
     staff
       ? { href: "/hub", label: "Hub", icon: "hub", match: (p: string) => p.startsWith("/hub") }
-      : { href: "/me?tab=profile", label: "Profile", icon: "user", match: () => false },
+      : { href: "/me?mode=renter&tab=profile", label: "Account", icon: "user", match: () => false },
   ];
   return (
     <nav className="bottomnav" aria-label="Main">
       {items.map((it) =>
         it.plus ? (
-          <Link key={it.href} href={it.href} className="plus" aria-label="List an outfit">
+          <Link key={it.href} href={it.href} className="plus" aria-label="List an outfit or shoes">
             <Icon name="plus" size={24} stroke={2.4} />
           </Link>
         ) : (
@@ -45,3 +45,4 @@ export function BottomNav({ staff }: { staff: boolean }) {
     </nav>
   );
 }
+
