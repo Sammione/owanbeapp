@@ -6,6 +6,7 @@ import { getUserAndProfile } from "@/lib/auth";
 import { CartProvider } from "@/context/CartContext";
 import { CartDrawer } from "@/components/CartDrawer";
 import { CartButton } from "@/components/CartButton";
+import { SupportWidget } from "@/components/SupportWidget";
 
 export const metadata: Metadata = {
   title: "Owambe Closet – Luxury Traditional Attire Rental | Lagos",
@@ -121,6 +122,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
           <BottomNav staff={staff} />
           <CartDrawer />
+          <SupportWidget />
         </CartProvider>
       </body>
     </html>
