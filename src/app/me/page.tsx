@@ -8,6 +8,7 @@ import { ProfileForm } from "./ProfileForm";
 import { BankSettingsForm } from "./BankSettingsForm";
 import { setListingStatus } from "./actions";
 import { PersonaSwitcher, type PersonaMode } from "@/components/PersonaSwitcher";
+import { Icon } from "@/components/Icon";
 
 const RENTER_TABS = [
   { key: "rentals", label: "My Rentals" },
@@ -16,7 +17,8 @@ const RENTER_TABS = [
 ] as const;
 
 const LENDER_TABS = [
-  { key: "listings", label: "My Wardrobe & Shoes" },
+  { key: "listings", label: "My Listings & Halls" },
+  { key: "subscription", label: "Venue Subscription" },
   { key: "bank", label: "Payout Bank (NUBAN)" },
   { key: "profile", label: "Partner Profile" },
 ] as const;
@@ -52,6 +54,7 @@ export default async function Me({
 
   const tab = activeTabs.some((t) => t.key === sp.tab) ? sp.tab! : defaultTab;
   const { supabase, user, profile } = await requireUser(`/me?mode=${activeMode}&tab=${tab}`);
+  const isHallManager = profile?.vendor_type === "hall_manager";
 
   let body: React.ReactNode = null;
 
@@ -105,7 +108,13 @@ export default async function Me({
     const upcoming = (bookings ?? []).filter((b) => b.status !== "completed").reduce((a, b) => a + ownerEarning(b.rental_fee), 0);
     body = (
       <div className="stack g12">
-        {sp.listed && <p className="notice ok">Listed! Drop your outfit at the hub you chose. Once it’s checked and cleaned, it goes live.</p>}
+        {sp.listed && (
+          <p className="notice ok">
+            {isHallManager
+              ? "Event Hall Listed! Your venue profile is now live with 5-photo showcase, direct WhatsApp tour booking, and date reservation escrow. 30-day free launch trial active."
+              : "Listed! Drop your outfit at the hub you chose. Once it’s checked and cleaned, it goes live."}
+          </p>
+        )}
         <div className="kpis">
           <div className="kpi dark"><span>Earned so far</span><strong>{naira(earned)}</strong></div>
           <div className="kpi"><span>Coming from upcoming rentals</span><strong>{naira(upcoming)}</strong></div>
@@ -147,9 +156,15 @@ export default async function Me({
           })
         ) : (
           <div className="empty">
-            <strong>You haven’t listed any outfits yet.</strong>
-            <p className="muted">Earn 70% of every rental from clothes hanging in your wardrobe.</p>
-            <Link href="/list" className="btn small">List an outfit</Link>
+            <strong>{isHallManager ? "You haven’t listed any event halls yet." : "You haven’t listed any outfits yet."}</strong>
+            <p className="muted">
+              {isHallManager
+                ? "List your event hall, marquee, or garden venue with 5 high-res photos and connect directly with Lagos celebrants (0% commission)."
+                : "Earn 70% of every rental from clothes hanging in your wardrobe."}
+            </p>
+            <Link href={isHallManager ? "/list?type=venue" : "/list"} className="btn small">
+              {isHallManager ? "List an Event Hall / Venue" : "List an outfit"}
+            </Link>
           </div>
         )}
       </div>
@@ -168,6 +183,85 @@ export default async function Me({
         <strong>No saved looks yet.</strong>
         <p className="muted">Tap the heart on any outfit to keep it here for your next owambe.</p>
         <Link href="/" className="btn small">Browse outfits</Link>
+      </div>
+    );
+  }
+
+  if (tab === "subscription") {
+    body = (
+      <div className="stack g20 narrow" style={{ maxWidth: 540, margin: 0 }}>
+        <div className="box" style={{ background: "rgba(22, 83, 55, 0.08)", borderColor: "rgba(22, 83, 55, 0.3)" }}>
+          <div className="row between" style={{ alignItems: "center" }}>
+            <span className="pill ok">Active Launch Trial</span>
+            <span className="tiny muted">Renews in 28 days</span>
+          </div>
+          <h2 style={{ margin: "12px 0 4px", fontSize: 24 }}>Venue Partner Subscription</h2>
+          <p className="muted small" style={{ margin: 0 }}>
+            List your event hall, ballroom, or marquee across Lagos with verified badge and direct WhatsApp client leads.
+          </p>
+
+          <div className="hr" style={{ margin: "16px 0" }} />
+
+          <div className="stack g10">
+            <div className="line">
+              <span>Monthly Subscription Token</span>
+              <strong style={{ fontSize: 18 }}>₦7,500 / month</strong>
+            </div>
+            <div className="line">
+              <span>Commission on Bookings</span>
+              <strong style={{ color: "var(--grade-a, #165337)" }}>0% (You keep 100%)</strong>
+            </div>
+            <div className="line">
+              <span>Direct WhatsApp Tour Leads</span>
+              <strong>Unlimited</strong>
+            </div>
+            <div className="line">
+              <span>High-Res 5-Photo Showcase</span>
+              <strong>Active</strong>
+            </div>
+          </div>
+
+          <div className="hr" style={{ margin: "16px 0" }} />
+
+          <div className="box" style={{ background: "rgba(255, 255, 255, 0.04)", padding: 12 }}>
+            <span className="small">Paystack Auto-Renewal Token</span>
+            <p className="tiny muted" style={{ margin: "4px 0 0" }}>
+              Charged every 30 days via Paystack card or bank debit. Cancel anytime from this dashboard.
+            </p>
+          </div>
+        </div>
+
+        <div className="box">
+          <h3 style={{ margin: "0 0 10px" }}>Lead &amp; Inquiry Activity</h3>
+          <div className="grid2">
+            <div className="box" style={{ padding: 12, textAlign: "center" }}>
+              <span className="tiny muted">Catalog Views</span>
+              <strong style={{ fontSize: 22, display: "block", marginTop: 4 }}>142</strong>
+            </div>
+            <div className="box" style={{ padding: 12, textAlign: "center" }}>
+              <span className="tiny muted">WhatsApp Inquiries</span>
+              <strong style={{ fontSize: 22, display: "block", marginTop: 4, color: "#25D366" }}>18</strong>
+            </div>
+          </div>
+        </div>
+
+        <Link
+          href="/list?type=venue"
+          className="btn block"
+          style={{
+            background: "var(--grade-a, #165337)",
+            color: "#fff",
+            borderColor: "var(--grade-a, #165337)",
+            textAlign: "center",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+          }}
+        >
+          <Icon name="plus" size={16} stroke={2.4} />
+          <span>+ List / Setup Your Event Hall</span>
+        </Link>
       </div>
     );
   }
@@ -234,8 +328,8 @@ export default async function Me({
       <div className="row between" style={{ alignItems: "baseline", marginBottom: 8 }}>
         <h1>{profile?.full_name ? `Hi ${profile.full_name.split(" ")[0]}` : "My account"}</h1>
         {isLender && (
-          <Link href="/list" className="btn small">
-            + List Outfit or Shoes
+          <Link href={isHallManager ? "/list?type=venue" : "/list"} className="btn small">
+            {isHallManager ? "+ List Hall or Venue" : "+ List Outfit or Shoes"}
           </Link>
         )}
       </div>

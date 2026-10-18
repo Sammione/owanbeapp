@@ -25,6 +25,10 @@ if (!SUPABASE_URL || !SERVICE_KEY) {
   process.exit(1);
 }
 
+if (typeof globalThis.WebSocket === "undefined") {
+  globalThis.WebSocket = class DummyWebSocket {};
+}
+
 const admin = createClient(SUPABASE_URL, SERVICE_KEY, {
   auth: { persistSession: false },
 });
@@ -170,6 +174,56 @@ const NEW_ITEMS = [
     grade: "A",
     quality: "premium",
   },
+
+  // --- EVENT HALLS & MARQUEES ---
+  {
+    title: "The Grand Oasis Event & Banquet Center (Egbeda)",
+    description: "Prestigious fully air-conditioned grand marquee banquet center along Egbeda-Idimu Road. Features soaring draped white chiffon ceilings, glowing crystal chandeliers, polished dance floor, 250kVA soundproof generator (diesel included for 8 hours), secured parking for 80+ vehicles with uniformed bouncers, and an en-suite VIP bridal changing suite with Hollywood vanity mirrors.",
+    category: "Event Halls & Marquees",
+    events: ["Wedding / Aso-ebi", "Anniversary / Banquet", "Birthday / Milestones"],
+    size_label: "Banquet: 450 Guests · Theater: 700 Guests",
+    pieces: "Main Hall, VIP Bridal Suite, 250kVA Standby Gen, 80-Car Parking, Luxury Restrooms",
+    price: 650000,
+    deposit: 50000,
+    area: "Egbeda",
+    imageFile: "hall_grand_marquee.jpg",
+    imageFiles: ["hall_grand_marquee.jpg", "hall_banquet_ballroom.jpg", "hall_exterior_parking.jpg", "hall_bridal_suite.jpg", "hall_garden_marquee.jpg"],
+    tag_code: "VEN-OASIS-010",
+    grade: "A",
+    quality: "premium",
+  },
+  {
+    title: "The Imperial Crystal Ballroom & Event Center (Ikotun)",
+    description: "Ultra-modern luxury event ballroom in central Ikotun. Engineered with acoustic sound absorption, ambient architectural purple and gold mood lighting, polished porcelain flooring, elevated performance stage, 10 standing 5HP AC units, and dedicated caterer prep kitchen.",
+    category: "Event Halls & Marquees",
+    events: ["Wedding / Aso-ebi", "Anniversary / Banquet", "Coronation / Chieftaincy"],
+    size_label: "Banquet: 350 Guests · Theater: 550 Guests",
+    pieces: "Grand Ballroom, Stage Rig, Industrial AC Chillers, 200kVA Gen, 60-Car Parking",
+    price: 500000,
+    deposit: 50000,
+    area: "Ikotun",
+    imageFile: "hall_banquet_ballroom.jpg",
+    imageFiles: ["hall_banquet_ballroom.jpg", "hall_grand_marquee.jpg", "hall_exterior_parking.jpg", "hall_bridal_suite.jpg"],
+    tag_code: "VEN-CRYST-011",
+    grade: "A",
+    quality: "premium",
+  },
+  {
+    title: "Emerald Palms Garden Marquee & Pavilion (Igando)",
+    description: "Scenic tropical outdoor garden venue and clear-top marquee pavilion in Igando. Ideal for sunset wedding receptions, milestone birthdays, and stylish open-air celebrations. Includes romantic fairy light canopy, illuminated walkways, standby generator, and private security perimeter.",
+    category: "Garden & Outdoor Venues",
+    events: ["Wedding / Aso-ebi", "Birthday / Milestones", "Anniversary / Banquet"],
+    size_label: "Banquet: 250 Guests · Theater: 400 Guests",
+    pieces: "Clear-Top Marquee Pavilion, Manicured Lawn, Fairy Lighting, Standby Gen, 50-Car Parking",
+    price: 380000,
+    deposit: 50000,
+    area: "Igando",
+    imageFile: "hall_garden_marquee.jpg",
+    imageFiles: ["hall_garden_marquee.jpg", "hall_exterior_parking.jpg", "hall_bridal_suite.jpg", "hall_grand_marquee.jpg"],
+    tag_code: "VEN-PALMS-012",
+    grade: "A",
+    quality: "premium",
+  },
 ];
 
 async function run() {
@@ -189,41 +243,46 @@ async function run() {
   for (const item of NEW_ITEMS) {
     console.log(`\nProcessing: "${item.title}"...`);
     const hubId = hubMap[item.area] || defaultHubId;
-    const localImgPath = path.join("public", "images", item.imageFile);
+    const allImgFiles = item.imageFiles || [item.imageFile];
+    const photoUrls = [];
 
-    let photoUrl = `/images/${item.imageFile}`;
+    for (const f of allImgFiles) {
+      const localImgPath = path.join("public", "images", f);
+      let pUrl = `/images/${f}`;
 
-    // Upload to Supabase Storage if file exists
-    if (fs.existsSync(localImgPath)) {
-      try {
-        const fileBuf = fs.readFileSync(localImgPath);
-        const storageKey = `seed/${item.imageFile}`;
-        const { error: upErr } = await admin.storage
-          .from("item-photos")
-          .upload(storageKey, fileBuf, {
-            contentType: "image/jpeg",
-            upsert: true,
-          });
-        if (upErr) {
-          console.warn(`Storage upload note for ${item.imageFile}:`, upErr.message);
-        } else {
-          const { data: pubData } = admin.storage.from("item-photos").getPublicUrl(storageKey);
-          if (pubData?.publicUrl) {
-            photoUrl = pubData.publicUrl;
-            console.log(`Uploaded to Supabase: ${photoUrl}`);
+      if (fs.existsSync(localImgPath)) {
+        try {
+          const fileBuf = fs.readFileSync(localImgPath);
+          const storageKey = `seed/${f}`;
+          const { error: upErr } = await admin.storage
+            .from("item-photos")
+            .upload(storageKey, fileBuf, {
+              contentType: "image/jpeg",
+              upsert: true,
+            });
+          if (upErr) {
+            console.warn(`Storage upload note for ${f}:`, upErr.message);
+          } else {
+            const { data: pubData } = admin.storage.from("item-photos").getPublicUrl(storageKey);
+            if (pubData?.publicUrl) {
+              pUrl = pubData.publicUrl;
+            }
           }
+        } catch (err) {
+          console.warn("Storage upload exception:", err);
         }
-      } catch (err) {
-        console.warn("Storage upload exception:", err);
       }
+      photoUrls.push(pUrl);
     }
+
+    console.log(`Photos ready (${photoUrls.length}):`, photoUrls[0]);
 
     // Check if item already exists by title
     const { data: existing } = await admin.from("items").select("id").eq("title", item.title).maybeSingle();
     if (existing) {
       console.log(`Updating existing item ${existing.id}...`);
       await admin.from("items").update({
-        photos: [photoUrl],
+        photos: photoUrls,
         status: "live",
         grade: item.grade,
         quality: item.quality,
@@ -249,7 +308,7 @@ async function run() {
         status: "live",
         grade: item.grade,
         quality: item.quality,
-        photos: [photoUrl],
+        photos: photoUrls,
         tag_code: item.tag_code,
       }).select();
 
@@ -261,7 +320,7 @@ async function run() {
     }
   }
 
-  console.log("\nAll items successfully seeded with verified high-resolution photography!");
+  console.log("\nAll items & venues successfully seeded with verified high-resolution photography!");
 }
 
 run().catch(console.error);

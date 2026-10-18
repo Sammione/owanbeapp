@@ -24,6 +24,16 @@ if (!SUPABASE_URL || !SERVICE_KEY) {
   process.exit(1);
 }
 
+if (typeof globalThis.WebSocket === "undefined") {
+  globalThis.WebSocket = class DummyWebSocket {
+    constructor() {}
+    addEventListener() {}
+    removeEventListener() {}
+    send() {}
+    close() {}
+  };
+}
+
 const admin = createClient(SUPABASE_URL, SERVICE_KEY, {
   auth: { persistSession: false },
 });
@@ -62,6 +72,20 @@ const DEMO_ACCOUNTS = [
       is_vendor: true,
       business_name: "Kudirat Event Essentials & Catering",
       vendor_type: "both",
+      verified_vendor: true,
+    },
+  },
+  {
+    email: "hallowner@owambecloset.com",
+    password: "OwambeHall2026!",
+    profile: {
+      full_name: "Babatunde Adeleke (Venue Manager)",
+      phone: "08056789012",
+      area: "Egbeda",
+      role: "user",
+      is_vendor: true,
+      business_name: "The Grand Oasis Event & Banquet Center",
+      vendor_type: "hall_manager",
       verified_vendor: true,
     },
   },

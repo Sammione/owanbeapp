@@ -8,9 +8,11 @@ import {
   CATEGORIES,
   COLORS,
   FASHION_CATEGORIES,
+  VENUE_CATEGORIES,
   EQUIPMENT_CATEGORIES,
   SERVICE_CATEGORIES,
 } from "@/lib/constants";
+import { DEMO_VENUES } from "@/lib/demo-venues";
 
 type SP = Promise<{
   q?: string;
@@ -24,6 +26,7 @@ type SP = Promise<{
 
 const PILLARS = [
   { id: "all", label: "All Rentals" },
+  { id: "venues", label: "Halls & Venues" },
   { id: "fashion", label: "Attire & Footwear" },
   { id: "equipment", label: "Event Equipment" },
   { id: "services", label: "Catering & Services" },
@@ -37,7 +40,7 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
   const area = AREAS.includes(sp.area as (typeof AREAS)[number]) ? sp.area! : "Ikotun";
   const category = CATEGORIES.includes(sp.category as (typeof CATEGORIES)[number]) ? sp.category! : "";
   const color = COLORS.find((c) => c.value === sp.color)?.value ?? "";
-  const pillar = (["all", "fashion", "equipment", "services"] as const).includes(sp.pillar as any)
+  const pillar = (["all", "venues", "fashion", "equipment", "services"] as const).includes(sp.pillar as any)
     ? sp.pillar!
     : "";
 
@@ -49,7 +52,18 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
     .order("created_at", { ascending: false })
     .limit(80);
 
-  if (category) query = query.eq("category", category);
+  if (category) {
+    query = query.eq("category", category);
+  } else if (pillar === "venues") {
+    query = query.in("category", [...VENUE_CATEGORIES]);
+  } else if (pillar === "equipment") {
+    query = query.in("category", [...EQUIPMENT_CATEGORIES]);
+  } else if (pillar === "services") {
+    query = query.in("category", [...SERVICE_CATEGORIES]);
+  } else if (pillar === "fashion") {
+    query = query.in("category", [...FASHION_CATEGORIES]);
+  }
+
   if (event) query = query.contains("events", [event]);
   if (grade) query = query.eq("grade", grade);
 
@@ -78,11 +92,25 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
     hub: { area: string } | { area: string }[] | null;
   };
 
-  const items = ((data ?? []) as Row[])
-    .map((r) => ({
-      ...r,
-      hub_area: Array.isArray(r.hub) ? r.hub[0]?.area ?? null : r.hub?.area ?? null,
-    }))
+  const dbItems = ((data ?? []) as Row[]).map((r) => ({
+    ...r,
+    hub_area: Array.isArray(r.hub) ? r.hub[0]?.area ?? null : r.hub?.area ?? null,
+  }));
+
+  const matchingDemoVenues = DEMO_VENUES.filter((v) => {
+    if (pillar && pillar !== "all" && pillar !== "venues") return false;
+    if (category && v.category !== category) return false;
+    if (event && !v.events.includes(event)) return false;
+    if (q) {
+      const needle = q.toLowerCase();
+      if (!v.title.toLowerCase().includes(needle) && !(v.description ?? "").toLowerCase().includes(needle)) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  const items = [...dbItems, ...matchingDemoVenues]
     .sort((a, b) => Number(b.hub_area === area) - Number(a.hub_area === area));
 
   const link = (patch: Record<string, string>) => {
@@ -104,7 +132,12 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
   const heroFeaturedItem = items.find((it) => it.photos && it.photos.length > 0) ?? items[0];
 
   let activeCategoryLinks: { name: string; query: string }[] = [];
-  if (pillar === "equipment") {
+  if (pillar === "venues") {
+    activeCategoryLinks = [
+      { name: "All Halls & Venues", query: "" },
+      ...VENUE_CATEGORIES.map((c) => ({ name: c, query: c })),
+    ];
+  } else if (pillar === "equipment") {
     activeCategoryLinks = [
       { name: "All Equipment", query: "" },
       ...EQUIPMENT_CATEGORIES.map((c) => ({ name: c, query: c })),
@@ -122,6 +155,8 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
   } else {
     activeCategoryLinks = [
       { name: "All Collections", query: "" },
+      { name: "Halls & Marquees", query: "Event Halls & Marquees" },
+      { name: "Garden Venues", query: "Garden & Outdoor Venues" },
       { name: "Aso-ebi / Lace", query: "Aso-ebi / lace" },
       { name: "Agbada", query: "Agbada" },
       { name: "Shoes & Footwear", query: "Shoes & Footwear" },
@@ -143,12 +178,12 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
             <span className="hero-kicker">Lagos One-Stop Event Marketplace</span>
 
             <h1 className="hero-heading">
-              Rent the Look, the Coolers <br />
+              Rent the Look, the Venue <br />
               <em>& the Feast for your Owambe.</em>
             </h1>
 
             <p className="hero-body">
-              Everything for your Lagos celebration in one verified place. Rent bespoke Aso-ebi, Agbada, and designer footwear, plus heavy-duty beverage coolers, cast-iron cooking pots, and verified party caterers across Ikotun, Egbeda, and Igando.
+              Everything for your Lagos celebration in one verified place. Book luxury Marquees &amp; Banquet Halls, rent bespoke Aso-ebi, Agbada, and designer footwear, plus heavy-duty beverage coolers, cast-iron pots, and verified party caterers across Ikotun, Egbeda, and Igando.
             </p>
 
             <div className="hero-actions">

@@ -4,8 +4,10 @@ import {
   TRUCK_DELIVERY_FEE,
   OWNER_SHARE,
   VENDOR_SHARE,
+  isVenueCategory,
   isEquipmentCategory,
   isServiceCategory,
+  VENUE_INSPECTION_ESCROW_NGN,
 } from "./constants";
 import { addDays } from "./format";
 
@@ -22,12 +24,13 @@ export function quote(
   eventDate: string,
   delivery: boolean
 ) {
+  const isVenue = isVenueCategory(item.category);
   const isEquipment = isEquipmentCategory(item.category);
   const isService = isServiceCategory(item.category);
 
   const rental_fee = item.price;
-  const cleaning_fee = isService ? 0 : CLEANING_FEE;
-  const delivery_fee = !delivery
+  const cleaning_fee = isService || isVenue ? 0 : CLEANING_FEE;
+  const delivery_fee = !delivery || isVenue
     ? 0
     : isEquipment
     ? TRUCK_DELIVERY_FEE
@@ -35,8 +38,14 @@ export function quote(
     ? 0
     : DELIVERY_FEE;
 
-  // Services use escrow and don't need a physical security deposit
-  const deposit = isService ? 0 : item.deposit > 0 ? item.deposit : defaultDeposit(item.price);
+  // Services use escrow and don't need a physical security deposit; Venues use escrow date hold
+  const deposit = isVenue
+    ? VENUE_INSPECTION_ESCROW_NGN
+    : isService
+    ? 0
+    : item.deposit > 0
+    ? item.deposit
+    : defaultDeposit(item.price);
 
   return {
     start_date: addDays(eventDate, -1),
@@ -45,7 +54,7 @@ export function quote(
     cleaning_fee,
     delivery_fee,
     deposit,
-    total: rental_fee + cleaning_fee + delivery_fee + deposit,
+    total: isVenue ? VENUE_INSPECTION_ESCROW_NGN : rental_fee + cleaning_fee + delivery_fee + deposit,
   };
 }
 

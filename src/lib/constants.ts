@@ -1,5 +1,10 @@
 export const AREAS = ["Ikotun", "Egbeda", "Igando"] as const;
 export const EVENTS = ["Wedding", "Burial", "Birthday", "Naming", "Church", "Party"] as const;
+export const VENUE_CATEGORIES = [
+  "Event Halls & Marquees",
+  "Garden & Outdoor Venues",
+] as const;
+
 export const CATEGORIES = [
   // Luxury Wardrobe & Footwear
   "Aso-ebi / lace",
@@ -9,6 +14,9 @@ export const CATEGORIES = [
   "Shoes & Footwear",
   "Ankara",
   "Accessories",
+  // Event Halls & Venues
+  "Event Halls & Marquees",
+  "Garden & Outdoor Venues",
   // Event Equipment & Hardware
   "Coolers & Ice Chests",
   "Cooking Pots & Burners",
@@ -47,6 +55,34 @@ export const FASHION_CATEGORIES = [
   "Accessories",
 ] as const;
 
+export const VENUE_SLOTS = [
+  "Main Stage & Hall View",
+  "Banquet Seating Layout",
+  "Gate, Compound & Parking",
+  "VIP / Bridal Dressing Suite",
+  "Restrooms & Caterer Prep Area",
+] as const;
+
+export const VENUE_CAPACITIES = [
+  "Intimate Hall (80 - 150 Guests)",
+  "Standard Banquet (200 - 350 Guests)",
+  "Grand Marquee (400 - 650 Guests)",
+  "Mega Convention (800 - 1,500+ Guests)",
+] as const;
+
+export const VENUE_AMENITIES = [
+  "Full Central / Standing AC Chillers",
+  "Heavy Duty Standby Generator (Included)",
+  "Secured Interlocked Parking (80+ Cars)",
+  "Dedicated VIP / Bridal Dressing Suite",
+  "Elevated Stage & Ambient Lighting Rig",
+  "Caterer Prep Kitchen & Washing Bay",
+  "Uniformed Security & Bouncers",
+] as const;
+
+export const VENUE_SUBSCRIPTION_NGN = 7500;
+export const VENUE_INSPECTION_ESCROW_NGN = 50000;
+
 export const EQUIPMENT_CAPACITIES = [
   "50L Beverage Cooler (50-70 drinks)",
   "100L Party Cooler (100-140 drinks)",
@@ -69,6 +105,11 @@ export const CATERING_CAPACITIES = [
   "Grand Reception (150 - 250 Guests)",
   "Mega Celebration (300+ Guests)",
 ] as const;
+
+export function isVenueCategory(category?: string | null): boolean {
+  if (!category) return false;
+  return (VENUE_CATEGORIES as readonly string[]).includes(category);
+}
 
 export function isEquipmentCategory(category?: string | null): boolean {
   if (!category) return false;

@@ -1,5 +1,5 @@
 export type Grade = "A" | "B" | "C";
-export type ItemType = "garment" | "equipment" | "service";
+export type ItemType = "garment" | "equipment" | "service" | "venue";
 
 export type Item = {
   id: string;
@@ -28,18 +28,31 @@ export type Item = {
   rejection_reason: string | null;
   cleaned_at: string | null;
   tag_code: string | null;
+  venue_banquet_capacity?: number | string | null;
+  venue_theater_capacity?: number | string | null;
+  venue_parking_cars?: number | string | null;
+  venue_generator_policy?: string | null;
+  venue_ac_type?: string | null;
+  venue_address?: string | null;
+  venue_whatsapp?: string | null;
+  subscription_status?: "active" | "trial" | "expired" | null;
+  subscription_expires_at?: string | null;
   created_at: string;
 };
 
-export type VendorProfile = {
+export type Profile = {
   id: string;
   full_name: string | null;
   phone: string | null;
   area: string | null;
+  role: string;
   business_name?: string | null;
-  vendor_type?: "tailor" | "equipment_rental" | "caterer" | "drinks" | "event_services" | null;
+  vendor_type?: "tailor" | "equipment_rental" | "caterer" | "small_chops" | "drinks" | "event_services" | "hall_manager" | null;
+  is_vendor?: boolean;
   verified_vendor?: boolean;
 };
+
+export type VendorProfile = Profile;
 
 export type Hub = { id: string; name: string; area: string; address: string | null; phone: string | null };
 

@@ -7,6 +7,12 @@ import {
   FASHION_CATEGORIES,
   EQUIPMENT_CATEGORIES,
   SERVICE_CATEGORIES,
+  VENUE_CATEGORIES,
+  VENUE_SLOTS,
+  VENUE_CAPACITIES,
+  VENUE_AMENITIES,
+  VENUE_SUBSCRIPTION_NGN,
+  VENUE_INSPECTION_ESCROW_NGN,
   EQUIPMENT_CAPACITIES,
   CATERING_CAPACITIES,
   EVENTS,
@@ -15,6 +21,7 @@ import {
   EU_SHOE_SIZES,
   HEEL_HEIGHTS,
   FOOTWEAR_STYLES,
+  isVenueCategory,
   isEquipmentCategory,
   isServiceCategory,
 } from "@/lib/constants";
@@ -32,6 +39,7 @@ const NO_MEASURE = [
   "Beads & jewelry",
   "Accessories",
   "Shoes & Footwear",
+  ...VENUE_CATEGORIES,
   ...EQUIPMENT_CATEGORIES,
   ...SERVICE_CATEGORIES,
 ];
@@ -53,18 +61,40 @@ export function ListingForm({
   userId,
   hubs,
   defaultArea,
+  initialType = "fashion",
+  userVendorType,
 }: {
   userId: string;
   hubs: Hub[];
   defaultArea: string | null;
+  initialType?: "fashion" | "equipment" | "service" | "venue";
+  userVendorType?: string | null;
 }) {
   const router = useRouter();
-  const [listingType, setListingType] = useState<"fashion" | "equipment" | "service">("fashion");
+  const [listingType, setListingType] = useState<"fashion" | "equipment" | "service" | "venue">(initialType);
+
+  const initialCat =
+    initialType === "venue"
+      ? VENUE_CATEGORIES[0]
+      : initialType === "equipment"
+      ? EQUIPMENT_CATEGORIES[0]
+      : initialType === "service"
+      ? SERVICE_CATEGORIES[0]
+      : FASHION_CATEGORIES[0];
+
+  const initialSize =
+    initialType === "venue"
+      ? "Banquet: 350 · Theater: 600"
+      : initialType === "equipment"
+      ? EQUIPMENT_CAPACITIES[0]
+      : initialType === "service"
+      ? CATERING_CAPACITIES[1]
+      : "";
 
   const [f, setF] = useState({
     title: "",
-    category: FASHION_CATEGORIES[0] as string,
-    size_label: "",
+    category: initialCat as string,
+    size_label: initialSize,
     pieces: "",
     description: "",
     price: "",
@@ -79,8 +109,11 @@ export function ListingForm({
   const isFootwear = f.category === "Shoes & Footwear";
   const isEquipment = isEquipmentCategory(f.category) || listingType === "equipment";
   const isService = isServiceCategory(f.category) || listingType === "service";
+  const isVenue = isVenueCategory(f.category) || listingType === "venue";
 
-  const slots = isService
+  const slots = isVenue
+    ? VENUE_SLOTS
+    : isService
     ? SERVICE_SLOTS
     : isEquipment
     ? EQUIPMENT_SLOTS
@@ -94,21 +127,52 @@ export function ListingForm({
   const [equipmentCapacity, setEquipmentCapacity] = useState<string>(EQUIPMENT_CAPACITIES[0]);
   const [cateringCapacity, setCateringCapacity] = useState<string>(CATERING_CAPACITIES[1]);
 
-  const [photos, setPhotos] = useState<(File | null)[]>(GARMENT_SLOTS.map(() => null));
-  const [previews, setPreviews] = useState<(string | null)[]>(GARMENT_SLOTS.map(() => null));
+  const [venueBanquet, setVenueBanquet] = useState<string>("350 Guests Banquet Style");
+  const [venueTheater, setVenueTheater] = useState<string>("600 Guests Theater Style");
+  const [venueParking, setVenueParking] = useState<string>("Secured Paved Parking (80+ Vehicles)");
+  const [venueGenPolicy, setVenueGenPolicy] = useState<string>("250kVA Standby Gen Included (8 Hours)");
+  const [venueACType, setVenueACType] = useState<string>("Full Central Air Conditioning / 10 Standing Chillers");
+  const [venueAddress, setVenueAddress] = useState<string>("");
+  const [venueWhatsApp, setVenueWhatsApp] = useState<string>("");
+  const [venueAmenities, setVenueAmenities] = useState<string[]>([...VENUE_AMENITIES.slice(0, 4)]);
+
+  const initialSlots =
+    initialType === "venue"
+      ? VENUE_SLOTS
+      : initialType === "service"
+      ? SERVICE_SLOTS
+      : initialType === "equipment"
+      ? EQUIPMENT_SLOTS
+      : GARMENT_SLOTS;
+
+  const [photos, setPhotos] = useState<(File | null)[]>(initialSlots.map(() => null));
+  const [previews, setPreviews] = useState<(string | null)[]>(initialSlots.map(() => null));
   const [events, setEvents] = useState<string[]>(["Wedding"]);
   const [agree, setAgree] = useState(false);
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
 
-  function onSwitchType(type: "fashion" | "equipment" | "service") {
+  function onSwitchType(type: "fashion" | "equipment" | "service" | "venue") {
     setListingType(type);
+    const targetSlots =
+      type === "venue"
+        ? VENUE_SLOTS
+        : type === "service"
+        ? SERVICE_SLOTS
+        : type === "equipment"
+        ? EQUIPMENT_SLOTS
+        : GARMENT_SLOTS;
+    setPhotos(targetSlots.map(() => null));
+    setPreviews(targetSlots.map(() => null));
+
     if (type === "fashion") {
-      setF((prev) => ({ ...prev, category: FASHION_CATEGORIES[0] }));
+      setF((prev) => ({ ...prev, category: FASHION_CATEGORIES[0], size_label: "" }));
     } else if (type === "equipment") {
       setF((prev) => ({ ...prev, category: EQUIPMENT_CATEGORIES[0], size_label: EQUIPMENT_CAPACITIES[0] }));
-    } else {
+    } else if (type === "service") {
       setF((prev) => ({ ...prev, category: SERVICE_CATEGORIES[0], size_label: CATERING_CAPACITIES[1] }));
+    } else {
+      setF((prev) => ({ ...prev, category: VENUE_CATEGORIES[0], size_label: "Banquet: 350 · Theater: 600" }));
     }
   }
 
@@ -154,8 +218,9 @@ export function ListingForm({
     if (price < 1000) return setError("Set a price of at least ₦1,000.");
     if (needsMeasure && (!f.bust || !f.waist || !f.length))
       return setError("Add at least bust, waist and length so renters know it will fit.");
-    if (!f.hub_id && !isService) return setError("Choose your neighborhood drop-off hub.");
-    if (!agree) return setError("Please confirm you own or operate this service/equipment.");
+    if (!f.hub_id && !isService && !isVenue) return setError("Choose your neighborhood drop-off hub.");
+    if (isVenue && !venueAddress.trim()) return setError("Please enter the exact venue address and landmark.");
+    if (!agree) return setError("Please confirm you own or operate this service/equipment/venue.");
 
     const supabase = createClient();
     try {
@@ -183,22 +248,30 @@ export function ListingForm({
       } else if (isService) {
         computedSize = cateringCapacity;
         computedPieces = computedPieces || "Service Staff + Warmers + Cutlery";
+      } else if (isVenue) {
+        computedSize = `${venueBanquet} · ${venueTheater}`;
+        computedPieces = `${venueACType} · ${venueGenPolicy} · ${venueParking}`;
+      }
+
+      let computedDesc = f.description.trim() || null;
+      if (isVenue) {
+        computedDesc = `${computedDesc ? computedDesc + "\n\n" : ""}📍 Address: ${venueAddress || "Lagos"}\n📞 WhatsApp: ${venueWhatsApp || "Direct via Owambe Closet"}\n✨ Amenities: ${venueAmenities.join(", ")}`;
       }
 
       const { error } = await supabase.from("items").insert({
         owner_id: userId,
         hub_id: f.hub_id || null,
         title: f.title.trim(),
-        description: f.description.trim() || null,
+        description: computedDesc,
         category: f.category,
         events,
         size_label: computedSize,
         pieces: computedPieces,
-        bust: isFootwear || isEquipment || isService ? null : num(f.bust),
-        waist: isFootwear || isEquipment || isService ? null : num(f.waist),
-        hip: isFootwear || isEquipment || isService ? null : num(f.hip),
-        length: isFootwear || isEquipment || isService ? null : num(f.length),
-        sleeve: isFootwear || isEquipment || isService ? null : num(f.sleeve),
+        bust: isFootwear || isEquipment || isService || isVenue ? null : num(f.bust),
+        waist: isFootwear || isEquipment || isService || isVenue ? null : num(f.waist),
+        hip: isFootwear || isEquipment || isService || isVenue ? null : num(f.hip),
+        length: isFootwear || isEquipment || isService || isVenue ? null : num(f.length),
+        sleeve: isFootwear || isEquipment || isService || isVenue ? null : num(f.sleeve),
         price,
         photos: urls,
       });
@@ -215,24 +288,69 @@ export function ListingForm({
 
   return (
     <form onSubmit={submit} className="stack g16">
-      {/* 3-Pillar Listing Type Switcher */}
+      {/* Dynamic Header based on Listing Type */}
+      <div className="stack g6" style={{ marginBottom: 8 }}>
+        <div className="row between" style={{ alignItems: "center" }}>
+          <span
+            className={`pill ${isVenue ? "ok" : isService || isEquipment ? "warn" : ""}`}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
+            <Icon name={isVenue ? "shield" : isService ? "utensils" : isEquipment ? "box" : "shield"} size={13} stroke={2.2} />
+            {isVenue
+              ? "Venue Partner Listing · 30-Day Free Trial"
+              : isService
+              ? "Party Catering & Services Partner"
+              : isEquipment
+              ? "Equipment Rental Fleet"
+              : "Wardrobe Sharing Partner (70% Payout)"}
+          </span>
+        </div>
+        <h1 style={{ fontSize: "clamp(24px, 3.5vw, 32px)", lineHeight: 1.15, margin: "4px 0 2px" }}>
+          {isVenue
+            ? "List Your Event Hall or Marquee"
+            : isService
+            ? "List Catering & Party Services"
+            : isEquipment
+            ? "List Event Hardware & Equipment"
+            : "Let your wardrobe pay you"}
+        </h1>
+        <p className="muted" style={{ margin: 0, lineHeight: 1.5 }}>
+          {isVenue
+            ? "Showcase your event center, banquet ballroom, or marquee pavilion with 5 guided photos, seating capacity, standby generator specs, and direct WhatsApp tour booking. 0% commission on your hall rental fee."
+            : isService
+            ? "Offer party jollof, small chops, cocktail bars, or hospitality protocol directly to Lagos celebrants. Guaranteed Paystack escrow and direct bank transfers."
+            : isEquipment
+            ? "List heavy-duty beverage coolers, cast-iron party pots, food warmers, and event chairs. Earn 80% with automated Paystack NUBAN payouts."
+            : "Snap it and set a price. Drop it at a hub, and we inspect, clean, grade and photograph it before renters see it. You earn 70% of every rental."}
+        </p>
+      </div>
+
+      {/* 4-Pillar Listing Type Switcher */}
       <div className="field">
-        <span className="label">What are you listing on Owambe Closet?</span>
+        <span className="label">Listing Category</span>
         <div className="seg" role="group" aria-label="Listing Category Type">
           <button
             type="button"
             aria-pressed={listingType === "fashion"}
             onClick={() => onSwitchType("fashion")}
           >
-            <strong>Attire &amp; Footwear</strong>
+            <strong>Attire &amp; Shoes</strong>
             <small>Aso-ebi, Agbada, Gele, Heels</small>
+          </button>
+          <button
+            type="button"
+            aria-pressed={listingType === "venue"}
+            onClick={() => onSwitchType("venue")}
+          >
+            <strong>Halls &amp; Venues</strong>
+            <small>Marquees, Ballrooms, Gardens</small>
           </button>
           <button
             type="button"
             aria-pressed={listingType === "equipment"}
             onClick={() => onSwitchType("equipment")}
           >
-            <strong>Event Equipment</strong>
+            <strong>Equipment</strong>
             <small>Coolers, Pots, Warmers, Chairs</small>
           </button>
           <button
@@ -240,8 +358,8 @@ export function ListingForm({
             aria-pressed={listingType === "service"}
             onClick={() => onSwitchType("service")}
           >
-            <strong>Catering &amp; Hospitality</strong>
-            <small>Party Jollof, Small Chops, Bar, Ushers</small>
+            <strong>Catering</strong>
+            <small>Jollof, Small Chops, Drinks Bar</small>
           </button>
         </div>
       </div>
@@ -249,25 +367,33 @@ export function ListingForm({
       <div
         className="partner-hub-card"
         style={{
-          background: isService
+          background: isVenue
+            ? "rgba(22, 83, 55, 0.08)"
+            : isService
             ? "rgba(22, 83, 55, 0.08)"
             : "rgba(212, 175, 55, 0.08)",
-          borderColor: isService
+          borderColor: isVenue
+            ? "rgba(22, 83, 55, 0.3)"
+            : isService
             ? "rgba(22, 83, 55, 0.3)"
             : "rgba(212, 175, 55, 0.3)",
         }}
       >
-        <Icon name={isService ? "utensils" : isEquipment ? "box" : "shield"} size={24} stroke={2} />
+        <Icon name={isVenue ? "shield" : isService ? "utensils" : isEquipment ? "box" : "shield"} size={24} stroke={2} />
         <div className="stack g2" style={{ flex: 1 }}>
           <strong className="small">
-            {isService
+            {isVenue
+              ? "Verified Venue Partner Network (30-Day Free Trial)"
+              : isService
               ? "Verified Vendor & Escrow Protection"
               : isEquipment
               ? "Commercial Equipment Rental Fleet"
               : "100% Anonymous & Protected Closet Sharing"}
           </strong>
           <span className="tiny muted">
-            {isService
+            {isVenue
+              ? "Receive direct WhatsApp inspection bookings and physical tour requests from wedding couples. Free 30-day launch trial (renews ₦7,500/mo, 0% commission)."
+              : isService
               ? "Celebrants pay upfront into Paystack escrow. Payout is released directly to your bank after the event."
               : isEquipment
               ? "Fleet items undergo sanitization & valve inspection. Van delivery available across Lagos zones."
@@ -277,7 +403,9 @@ export function ListingForm({
       </div>
 
       <div className="field">
-        <span className="label">Photos (at least 3 photos)</span>
+        <span className="label">
+          {isVenue ? "5 Guided Venue Photos (High-Resolution Showcase)" : "Photos (at least 3 photos)"}
+        </span>
         <div className="uploads">
           {slots.map((label, i) => (
             <div key={label} className="upload">
@@ -309,7 +437,9 @@ export function ListingForm({
           ))}
         </div>
         <span className="hint">
-          {isService
+          {isVenue
+            ? "5 guided photos: Main hall & stage, Banquet seating, Gate & parking lot, VIP changing suite, and clean restrooms."
+            : isService
             ? "Upload past event catering photos, food presentation, and uniformed serving team."
             : isEquipment
             ? "Clear photos of full equipment unit, interior/tank cleanliness, and valves/handles."
@@ -319,7 +449,9 @@ export function ListingForm({
 
       <div className="field">
         <label htmlFor="title">
-          {isService
+          {isVenue
+            ? "Hall / Venue Name"
+            : isService
             ? "Service / Package Title"
             : isEquipment
             ? "Equipment Title"
@@ -334,7 +466,9 @@ export function ListingForm({
           onChange={set("title")}
           maxLength={90}
           placeholder={
-            isService
+            isVenue
+              ? "e.g. The Grand Oasis Event Center & Marquee (Egbeda)"
+              : isService
               ? "e.g. Royal Owambe Party Jollof & Asun Buffet (100 Guests)"
               : isEquipment
               ? "e.g. 150L Heavy-Duty Beverage Ice Chest with Tap"
@@ -349,7 +483,9 @@ export function ListingForm({
         <div className="field">
           <label htmlFor="cat">Category</label>
           <select id="cat" className="input" value={f.category} onChange={set("category")}>
-            {(listingType === "equipment"
+            {(listingType === "venue"
+              ? VENUE_CATEGORIES
+              : listingType === "equipment"
               ? EQUIPMENT_CATEGORIES
               : listingType === "service"
               ? SERVICE_CATEGORIES
@@ -363,7 +499,23 @@ export function ListingForm({
         </div>
 
         {/* Dynamic Capacity / Sizing */}
-        {listingType === "equipment" ? (
+        {listingType === "venue" ? (
+          <div className="field">
+            <label htmlFor="venue_banq">Banquet Seating Capacity</label>
+            <select
+              id="venue_banq"
+              className="input"
+              value={venueBanquet}
+              onChange={(e) => setVenueBanquet(e.target.value)}
+            >
+              {VENUE_CAPACITIES.map((cap) => (
+                <option key={cap} value={cap}>
+                  {cap}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : listingType === "equipment" ? (
           <div className="field">
             <label htmlFor="eq_cap">Capacity & Spec</label>
             <select
@@ -434,7 +586,7 @@ export function ListingForm({
             </select>
           </div>
           <div className="field">
-            <label htmlFor="style">Silhouette & Style</label>
+            <label htmlFor="style">Silhouette &amp; Style</label>
             <select id="style" className="input" value={footwearStyle} onChange={(e) => setFootwearStyle(e.target.value)}>
               {FOOTWEAR_STYLES.map((st) => (
                 <option key={st} value={st}>
@@ -442,6 +594,104 @@ export function ListingForm({
                 </option>
               ))}
             </select>
+          </div>
+        </div>
+      )}
+
+      {isVenue && (
+        <div className="stack g12 box" style={{ background: "rgba(22, 83, 55, 0.04)", borderColor: "rgba(22, 83, 55, 0.2)" }}>
+          <strong style={{ fontSize: 16 }}>Venue Architecture &amp; Capacity Specs</strong>
+
+          <div className="grid2">
+            <div className="field">
+              <label htmlFor="v_theater">Theater / Cinema Capacity</label>
+              <input
+                id="v_theater"
+                className="input"
+                value={venueTheater}
+                onChange={(e) => setVenueTheater(e.target.value)}
+                placeholder="e.g. 600 Guests Theater Style"
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="v_parking">Parking Capacity &amp; Security</label>
+              <input
+                id="v_parking"
+                className="input"
+                value={venueParking}
+                onChange={(e) => setVenueParking(e.target.value)}
+                placeholder="e.g. Secured Paved Parking (80+ Vehicles)"
+              />
+            </div>
+          </div>
+
+          <div className="grid2">
+            <div className="field">
+              <label htmlFor="v_gen">Generator &amp; Standby Power Policy</label>
+              <input
+                id="v_gen"
+                className="input"
+                value={venueGenPolicy}
+                onChange={(e) => setVenueGenPolicy(e.target.value)}
+                placeholder="e.g. 250kVA Standby Gen Included (8 Hours)"
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="v_ac">Air Conditioning &amp; Chillers</label>
+              <input
+                id="v_ac"
+                className="input"
+                value={venueACType}
+                onChange={(e) => setVenueACType(e.target.value)}
+                placeholder="e.g. Full Central Chillers / 10 Standing 5HP Units"
+              />
+            </div>
+          </div>
+
+          <div className="grid2">
+            <div className="field">
+              <label htmlFor="v_addr">Exact Hall Address &amp; Landmark *</label>
+              <input
+                id="v_addr"
+                className="input"
+                value={venueAddress}
+                onChange={(e) => setVenueAddress(e.target.value)}
+                placeholder="Plot 15, Egbeda-Idimu Road, Opposite Zenith Bank, Egbeda, Lagos"
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="v_phone">Manager WhatsApp (for Tour Alerts) *</label>
+              <input
+                id="v_phone"
+                type="tel"
+                className="input"
+                value={venueWhatsApp}
+                onChange={(e) => setVenueWhatsApp(e.target.value)}
+                placeholder="080 1234 5678"
+              />
+            </div>
+          </div>
+
+          <div className="field">
+            <span className="label">Included Venue Amenities</span>
+            <div className="chips" role="group">
+              {VENUE_AMENITIES.map((am) => {
+                const active = venueAmenities.includes(am);
+                return (
+                  <button
+                    key={am}
+                    type="button"
+                    className="chip"
+                    aria-pressed={active}
+                    onClick={() =>
+                      setVenueAmenities(active ? venueAmenities.filter((x) => x !== am) : [...venueAmenities, am])
+                    }
+                  >
+                    {am}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}
@@ -486,14 +736,18 @@ export function ListingForm({
       )}
 
       <div className="field">
-        <label htmlFor="pieces">What’s included in this listing</label>
+        <label htmlFor="pieces">
+          {isVenue ? "Included Hall Facilities & Infrastructure *" : "What’s included in this listing"}
+        </label>
         <input
           id="pieces"
           className="input"
           value={f.pieces}
           onChange={set("pieces")}
           placeholder={
-            isService
+            isVenue
+              ? "e.g. Main Ballroom, VIP Dressing Suite, 250kVA Standby Gen, Restrooms, Secured Parking"
+              : isService
               ? "e.g. Lead Chef, 2 Servers, Food Warmers, Disposable Packs & Cutlery"
               : isEquipment
               ? "e.g. Cooler Tank, Drain Plug, 2 Side Carry Handles"
@@ -506,7 +760,9 @@ export function ListingForm({
       </div>
 
       <div className="field">
-        <label htmlFor="desc">Description & details for celebrants</label>
+        <label htmlFor="desc">
+          {isVenue ? "Hall Specifications & Booking Policies for Celebrants *" : "Description & details for celebrants"}
+        </label>
         <textarea
           id="desc"
           className="input"
@@ -514,7 +770,9 @@ export function ListingForm({
           onChange={set("description")}
           maxLength={600}
           placeholder={
-            isService
+            isVenue
+              ? "Ceiling height, acoustic treatments, stage dimensions, curfew hours, decor guidelines, caution deposit policies…"
+              : isService
               ? "Menu items, dietary options, setup requirements, on-site timing…"
               : isEquipment
               ? "Tank dimensions, ice retention time, burner connection type, cleanliness condition…"
@@ -526,7 +784,7 @@ export function ListingForm({
       <div className="grid2">
         <div className="field">
           <label htmlFor="price">
-            {isService ? "Package Price (₦)" : "Rental Price (3 Days) (₦)"}
+            {isVenue ? "Hall Rental Rate (Per Event Day) (₦)" : isService ? "Package Price (₦)" : "Rental Price (3 Days) (₦)"}
           </label>
           <input
             id="price"
@@ -534,10 +792,10 @@ export function ListingForm({
             inputMode="numeric"
             value={f.price}
             onChange={set("price")}
-            placeholder={isService ? "150000" : isEquipment ? "12000" : "15000"}
+            placeholder={isVenue ? "650000" : isService ? "150000" : isEquipment ? "12000" : "15000"}
           />
         </div>
-        {!isService ? (
+        {!isService && !isVenue ? (
           <div className="field">
             <label htmlFor="hub">Drop-off Hub / Vendor Warehouse</label>
             <select id="hub" className="input" value={f.hub_id} onChange={set("hub_id")}>
@@ -550,8 +808,8 @@ export function ListingForm({
           </div>
         ) : (
           <div className="field">
-            <label>Service Delivery Zone</label>
-            <input className="input" disabled value="All Lagos Event Venues (On-Site)" />
+            <label>{isVenue ? "Venue Access Model" : "Service Delivery Zone"}</label>
+            <input className="input" disabled value={isVenue ? "Direct Guest On-Site Arrival (No Drop-off Hub)" : "All Lagos Event Venues (On-Site)"} />
           </div>
         )}
       </div>
@@ -559,10 +817,16 @@ export function ListingForm({
       <div className="band">
         <div>
           <p style={{ marginTop: 0 }}>
-            {isService || isEquipment ? "Partner Vendor Share (80%)" : "Wardrobe Owner Share (70%)"}
+            {isVenue
+              ? "Venue Partner Listing Model"
+              : isService || isEquipment
+              ? "Partner Vendor Share (80%)"
+              : "Wardrobe Owner Share (70%)"}
           </p>
           <h2>
-            {price >= 1000
+            {isVenue
+              ? "30-Day Free Trial (renews ₦7,500/mo) · 0% booking commission"
+              : price >= 1000
               ? `${naira(price * (isService || isEquipment ? VENDOR_SHARE : OWNER_SHARE))} per booking`
               : "Set a price to see earnings"}
           </h2>
@@ -577,7 +841,7 @@ export function ListingForm({
           style={{ width: 20, height: 20, marginTop: 2 }}
         />
         <span>
-          I own or am licensed to supply this {isService ? "catering/event service" : isEquipment ? "event equipment" : "outfit/shoes"}. I understand payouts happen after verified event completion or clean return.
+          I own or manage this {isVenue ? "event hall / marquee venue" : isService ? "catering/event service" : isEquipment ? "event equipment" : "outfit/shoes"}. I confirm details are accurate and inspection walkthroughs / reserved event dates will be honored.
         </span>
       </label>
 
@@ -586,6 +850,8 @@ export function ListingForm({
       <button className="btn block" disabled={busy}>
         {busy
           ? "Please wait…"
+          : isVenue
+          ? "List Event Hall / Venue"
           : isService
           ? "List Catering / Party Service"
           : isEquipment

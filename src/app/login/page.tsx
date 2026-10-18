@@ -1,5 +1,6 @@
 "use client";
 import { Suspense, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -34,6 +35,15 @@ const DEMO_PERSONAS = [
     badge: "Vendor Portal",
     badgeTone: "warn",
     redirectTo: "/me?mode=lender",
+  },
+  {
+    roleTitle: "Event Hall & Marquee Venue Manager",
+    email: "hallowner@owambecloset.com",
+    password: "OwambeHall2026!",
+    desc: "Showcase 5 hall photos, manage dates, track direct WhatsApp tour leads, and manage ₦7,500/mo token subscription.",
+    badge: "Venue Portal",
+    badgeTone: "ok",
+    redirectTo: "/me?mode=lender&tab=subscription",
   },
 ];
 
@@ -191,9 +201,36 @@ function LoginInner() {
             <div><strong>Admin:</strong> <code>admin@owambecloset.com</code> · Pass: <code>OwambeAdmin2026!</code></div>
             <div><strong>Borrower:</strong> <code>borrower@owambecloset.com</code> · Pass: <code>OwambeBorrower2026!</code></div>
             <div><strong>Vendor:</strong> <code>vendor@owambecloset.com</code> · Pass: <code>OwambeVendor2026!</code></div>
+            <div><strong>Hall Manager:</strong> <code>hallowner@owambecloset.com</code> · Pass: <code>OwambeHall2026!</code></div>
             <div><strong>Owner Admin:</strong> <code>sammione531@gmail.com</code> · Pass: <code>OwambeAdmin2026!</code></div>
           </div>
         </details>
+      </div>
+
+      {/* Dedicated Hall & Venue Portal Callout */}
+      <div
+        className="box"
+        style={{
+          background: "linear-gradient(135deg, rgba(22, 83, 55, 0.1) 0%, rgba(212, 175, 55, 0.08) 100%)",
+          border: "1px solid rgba(22, 83, 55, 0.3)",
+          borderRadius: 8,
+          padding: "12px 16px",
+          marginBottom: 20,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+        }}
+      >
+        <div>
+          <strong style={{ fontSize: "0.92rem", display: "block" }}>🏛️ Managing an Event Hall or Marquee?</strong>
+          <span className="tiny muted">
+            Access 5-photo upload, date availability, and ₦7,500/mo token subscription.
+          </span>
+        </div>
+        <Link href="/halls/login" className="btn small" style={{ background: "var(--grade-a, #165337)", color: "#fff", whiteSpace: "nowrap" }}>
+          Venue Portal →
+        </Link>
       </div>
 
       {/* Standard Sign In Form */}

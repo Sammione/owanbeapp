@@ -1,7 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getUserAndProfile } from "@/lib/auth";
-import { GRADES } from "@/lib/constants";
+import {
+  GRADES,
+  isVenueCategory,
+  isEquipmentCategory,
+  isServiceCategory,
+} from "@/lib/constants";
+import { DEMO_VENUES } from "@/lib/demo-venues";
 import { naira, niceDate } from "@/lib/format";
 import type { Item, Hub } from "@/lib/types";
 import { Icon } from "@/components/Icon";
@@ -22,13 +28,24 @@ export default async function ItemPage({
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const { supabase, user, profile } = await getUserAndProfile();
 
-  const { data: item } = await supabase.from("items").select("*").eq("id", id).maybeSingle<Item>();
+  const demoVenue = DEMO_VENUES.find((v) => v.id === id);
+  let item = demoVenue as Item | null;
+  if (!item) {
+    const { data } = await supabase.from("items").select("*").eq("id", id).maybeSingle<Item>();
+    item = data;
+  }
   if (!item) notFound();
 
   const [{ data: owner }, { data: hub }, { data: busy }, saved] = await Promise.all([
-    supabase.from("owner_public").select("first_name,area").eq("id", item.owner_id).maybeSingle(),
-    item.hub_id ? supabase.from("hubs").select("*").eq("id", item.hub_id).maybeSingle<Hub>() : Promise.resolve({ data: null }),
-    supabase.rpc("item_busy_ranges", { p_item: item.id }),
+    demoVenue
+      ? Promise.resolve({ data: { first_name: "Verified Venue Partner", area: demoVenue.hub_area } })
+      : supabase.from("owner_public").select("first_name,area").eq("id", item.owner_id).maybeSingle(),
+    demoVenue
+      ? Promise.resolve({ data: { id: "hub-venue", name: "Direct On-Site Inspection", area: demoVenue.hub_area, address: "Lagos Venue", phone: "080 3322 1100" } as Hub })
+      : item.hub_id
+      ? supabase.from("hubs").select("*").eq("id", item.hub_id).maybeSingle<Hub>()
+      : Promise.resolve({ data: null }),
+    demoVenue ? Promise.resolve({ data: [] }) : supabase.rpc("item_busy_ranges", { p_item: item.id }),
     user ? supabase.from("saved").select("item_id").eq("user_id", user.id).eq("item_id", item.id).maybeSingle() : Promise.resolve({ data: null }),
   ]);
 
@@ -45,12 +62,13 @@ export default async function ItemPage({
   ).filter(([, v]) => v != null);
 
   const estimatedRetail = Math.round((item.price * 6.2) / 1000) * 1000;
+  const isVenue = isVenueCategory(item.category);
 
   return (
     <div className="container">
       {/* Top action row */}
       <div className="row between">
-        <Link href="/" className="iconbtn" aria-label="Back to outfits">
+        <Link href="/" className="iconbtn" aria-label={isVenue ? "Back to venues" : "Back to outfits"}>
           <Icon name="back" stroke={2} />
         </Link>
         <div className="row g10">
@@ -67,7 +85,12 @@ export default async function ItemPage({
       {item.status !== "live" && (
         <div className="notice warn">
           Listing status: <strong>{item.status}</strong>
-          {item.status === "pending" && ". The hub will inspect, clean and grade this outfit before making it live."}
+          {item.status === "pending" &&
+            (isVenue
+              ? ". Our venue concierge team will verify your hall listing specifications before publishing."
+              : isEquipmentCategory(item.category) || isServiceCategory(item.category)
+              ? ". Our operations team will verify your vendor inventory."
+              : ". The hub will inspect, clean and grade this outfit before making it live.")}
           {item.status === "rejected" && item.rejection_reason && `: ${item.rejection_reason}`}
         </div>
       )}
@@ -258,9 +281,52 @@ export default async function ItemPage({
             </div>
           )}
 
+          {/* Venue Architecture & Amenities (Halls & Marquees) */}
+          {isVenueCategory(item.category) && (
+            <div className="measurement-box">
+              <div className="row between">
+                <div className="row g8" style={{ alignItems: "center" }}>
+                  <Icon name="shield" size={20} stroke={2} />
+                  <h3 style={{ margin: 0 }}>Venue &amp; Hall Architecture</h3>
+                </div>
+                <span className="tiny" style={{ color: "var(--grade-a, #165337)", fontWeight: 600 }}>Verified Venue Partner</span>
+              </div>
+              <div className="grid2" style={{ gap: 10, marginTop: 10 }}>
+                <div className="field box" style={{ padding: 12 }}>
+                  <span className="tiny muted">Banquet / Dinner Layout</span>
+                  <strong style={{ fontSize: 16 }}>{item.size_label?.split("·")[0]?.trim() || "350 Guests Banquet"}</strong>
+                </div>
+                <div className="field box" style={{ padding: 12 }}>
+                  <span className="tiny muted">Theater / Cinema Capacity</span>
+                  <strong style={{ fontSize: 16 }}>{item.size_label?.split("·")[1]?.trim() || "600 Guests Theater"}</strong>
+                </div>
+              </div>
+              <div className="grid2" style={{ gap: 10, marginTop: 10 }}>
+                <div className="field box" style={{ padding: 12 }}>
+                  <span className="tiny muted">Air Conditioning</span>
+                  <strong style={{ fontSize: 15 }}>Full Central AC Chillers</strong>
+                </div>
+                <div className="field box" style={{ padding: 12 }}>
+                  <span className="tiny muted">Standby Power</span>
+                  <strong style={{ fontSize: 15 }}>250kVA Gen Included (8 hrs)</strong>
+                </div>
+              </div>
+              <div className="tailor-quality-card" style={{ marginTop: 10, background: "rgba(22, 83, 55, 0.08)", borderColor: "rgba(22, 83, 55, 0.2)" }}>
+                <div className="tqc-title">
+                  <span style={{ color: "var(--grade-a, #165337)" }}>Inspection Guarantee &amp; Escrow Security</span>
+                </div>
+                <p className="tqc-desc" style={{ color: "var(--ink-secondary)" }}>
+                  Schedule a free physical tour before confirming. You can also place an escrow date-hold deposit with full money-back protection if the venue does not match the specifications.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Tailor Measurements for Garments */}
-          {item.category !== "Shoes & Footwear" &&
-            !(["Coolers & Ice Chests", "Cooking Pots & Burners", "Chafing Dishes & Food Warmers", "Canopies, Tables & Chairs", "Generators & Sound Systems", "Party Catering & Jollof", "Small Chops & Finger Foods", "Cocktails & Drinks Bar", "Event Ushers & Protocol"] as const).includes(item.category as any) &&
+          {!isVenueCategory(item.category) &&
+            !isEquipmentCategory(item.category) &&
+            !isServiceCategory(item.category) &&
+            item.category !== "Shoes & Footwear" &&
             measures.length > 0 && (
             <div className="measurement-box">
               <div className="row between">
@@ -284,7 +350,10 @@ export default async function ItemPage({
           )}
 
           {/* Interactive "Will It Fit Me?" Fit Checker (Garments only) */}
-          {!(["Coolers & Ice Chests", "Cooking Pots & Burners", "Chafing Dishes & Food Warmers", "Canopies, Tables & Chairs", "Generators & Sound Systems", "Party Catering & Jollof", "Small Chops & Finger Foods", "Cocktails & Drinks Bar", "Event Ushers & Protocol", "Shoes & Footwear"] as const).includes(item.category as any) &&
+          {!isVenueCategory(item.category) &&
+            !isEquipmentCategory(item.category) &&
+            !isServiceCategory(item.category) &&
+            item.category !== "Shoes & Footwear" &&
             (item.bust || item.waist || item.hip) && (
             <FitChecker item={item} />
           )}

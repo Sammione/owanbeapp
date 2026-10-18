@@ -2,16 +2,33 @@ import { requireUser } from "@/lib/auth";
 import type { Hub } from "@/lib/types";
 import { ListingForm } from "./ListingForm";
 
-export default async function ListPage() {
+export default async function ListPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ type?: string }>;
+}) {
+  const sp = (await searchParams) ?? {};
   const { supabase, user, profile } = await requireUser("/list");
   const { data: hubs } = await supabase.from("hubs").select("*").eq("active", true).order("name");
+
+  const initialType =
+    sp.type === "venue" || profile?.vendor_type === "hall_manager"
+      ? "venue"
+      : sp.type === "equipment" || profile?.vendor_type === "equipment_rental"
+      ? "equipment"
+      : sp.type === "service" || ["caterer", "small_chops", "drinks"].includes(profile?.vendor_type ?? "")
+      ? "service"
+      : "fashion";
+
   return (
     <div className="container narrow">
-      <div className="stack g6">
-        <h1>Let your wardrobe pay you</h1>
-        <p className="muted">Snap it and set a price. Drop it at a hub, and we check, clean, grade and photograph it before renters see it. You earn 70% of every rental.</p>
-      </div>
-      <ListingForm userId={user.id} hubs={(hubs ?? []) as Hub[]} defaultArea={profile?.area ?? null} />
+      <ListingForm
+        userId={user.id}
+        hubs={(hubs ?? []) as Hub[]}
+        defaultArea={profile?.area ?? null}
+        initialType={initialType}
+        userVendorType={profile?.vendor_type ?? null}
+      />
     </div>
   );
 }

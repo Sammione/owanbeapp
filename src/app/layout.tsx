@@ -96,7 +96,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   <h4>Partners & Vendors</h4>
                   <Link href="/list">List Attire or Shoes (70%)</Link>
                   <Link href="/list">List Coolers & Pots (80%)</Link>
-                  <Link href="/vendors/register">Vendor & Caterer Onboarding</Link>
+                  <Link href="/halls/login">Venue Partner Portal (Login)</Link>
+                  <Link href="/vendors/register">Hall & Vendor Registration</Link>
                   <Link href="/me?mode=lender&tab=bank">Payout Bank Setup</Link>
                 </div>
                 <div className="footer-col">
