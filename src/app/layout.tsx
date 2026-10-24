@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import "./globals.css";
 import { BottomNav, TopLinks } from "@/components/NavLinks";
 import { getUserAndProfile } from "@/lib/auth";
@@ -12,6 +13,10 @@ export const metadata: Metadata = {
   title: "Owambe Closet – Luxury Traditional Attire Rental | Lagos",
   description:
     "Rent bespoke Aso-ebi, Agbada, pre-tied Gele, and royal coral beads across Ikotun, Egbeda, and Igando. Inspected and dry-cleaned at neighborhood hubs.",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export const viewport: Viewport = {
@@ -43,8 +48,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <div className="shell">
             <header className="topbar">
               <Link href="/" className="brand-logo" aria-label="Owambe Closet Home">
+                <Image
+                  src="/logo.png"
+                  alt="Owambe Closet"
+                  width={44}
+                  height={44}
+                  className="brand-logo-img"
+                  priority
+                />
                 <span className="brand-name">OWAMBE CLOSET</span>
-                <span className="brand-dot">.</span>
               </Link>
 
               <TopLinks signedIn={!!user} staff={staff} />
@@ -68,7 +80,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <footer className="luxury-footer">
             <div className="footer-top">
               <div className="footer-brand">
-                <span className="brand-name">OWAMBE CLOSET</span>
+                <Link href="/" className="footer-logo-link" aria-label="Owambe Closet Home">
+                  <Image
+                    src="/logo.png"
+                    alt="Owambe Closet"
+                    width={80}
+                    height={80}
+                    className="footer-logo-img"
+                  />
+                </Link>
                 <p className="footer-tagline">
                   A peer-to-peer wardrobe sharing marketplace for Lagos, Nigeria. Every outfit is audited, graded, and hospital-grade sanitized by partner tailor shops and boutiques.
                 </p>
