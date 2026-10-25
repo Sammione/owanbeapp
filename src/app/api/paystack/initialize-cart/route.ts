@@ -5,6 +5,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { initializeTransaction } from "@/lib/paystack";
 import { defaultDeposit, overlaps } from "@/lib/pricing";
 import { addDays, todayISO } from "@/lib/format";
+import { isValidReferralCode, normalizeReferralCode } from "@/lib/referrals";
+import { checkCartBundleEligibility, BUNDLE_DISCOUNT_PERCENT } from "@/lib/bundles";
 
 const HEAVY_CATEGORIES = [
   "Coolers & Ice Chests",
@@ -29,6 +31,9 @@ export async function POST(req: Request) {
     eventDate?: string;
     delivery?: boolean;
     deliveryAddress?: string;
+    referralCode?: string;
+    bundleDiscount?: number;
+    totalDiscount?: number;
   };
 
   try {
@@ -80,6 +85,7 @@ export async function POST(req: Request) {
   const preparedBookings: any[] = [];
   let totalHire = 0;
   let totalDeposit = 0;
+  const categoriesInCart: string[] = [];
 
   for (const c of cartItems) {
     const item = itemMap.get(c.id);
@@ -91,6 +97,7 @@ export async function POST(req: Request) {
     }
 
     const qty = Math.max(1, c.quantity || 1);
+    categoriesInCart.push(item.category);
     if (HEAVY_CATEGORIES.includes(item.category)) {
       hasHeavy = true;
     }
@@ -125,19 +132,46 @@ export async function POST(req: Request) {
     });
   }
 
+  // Calculate discounts
+  let effectiveDiscount = 0;
+  let appliedReferralCode: string | null = null;
+
+  // 1. Referral discount check
+  if (body.referralCode) {
+    const refCheck = isValidReferralCode(body.referralCode, user.id);
+    if (refCheck.valid) {
+      effectiveDiscount += refCheck.discount;
+      appliedReferralCode = normalizeReferralCode(body.referralCode);
+    }
+  }
+
+  // 2. Outfit Bundle discount check (15% if 2+ distinct fashion categories)
+  const bundleCheck = checkCartBundleEligibility(categoriesInCart);
+  if (bundleCheck.isBundle) {
+    const bundleDiscount = Math.round((totalHire * BUNDLE_DISCOUNT_PERCENT) / 100);
+    effectiveDiscount += bundleDiscount;
+  }
+
+  // Ensure discount doesn't exceed totalHire
+  effectiveDiscount = Math.min(totalHire, effectiveDiscount);
+  const discountedHire = Math.max(0, totalHire - effectiveDiscount);
+
   // Calculate single consolidated delivery fee
   const deliveryFee = delivery ? (hasHeavy ? 8000 : 2500) : 0;
-  const grandTotal = totalHire + totalDeposit + deliveryFee;
+  const grandTotal = discountedHire + totalDeposit + deliveryFee;
 
   const reference = `OWC-CART-${Date.now().toString(36).toUpperCase()}-${crypto.randomBytes(3).toString("hex").toUpperCase()}`;
 
-  // Assign delivery fee to the first booking so sum of totals matches grandTotal
+  // Assign delivery fee and deduct discount across bookings
   const insertedBookingIds: string[] = [];
 
   for (let i = 0; i < preparedBookings.length; i++) {
     const b = preparedBookings[i];
     const itemDeliveryFee = i === 0 ? deliveryFee : 0;
-    const itemTotal = b.rental_fee + b.deposit + itemDeliveryFee;
+    // Deduct discount from the first booking's rental fee for accounting consistency
+    const itemDiscount = i === 0 ? effectiveDiscount : 0;
+    const itemRentalFee = Math.max(0, b.rental_fee - itemDiscount);
+    const itemTotal = itemRentalFee + b.deposit + itemDeliveryFee;
 
     const { data: created, error: insErr } = await admin
       .from("bookings")
@@ -149,7 +183,7 @@ export async function POST(req: Request) {
         end_date: b.end_date,
         delivery: b.delivery,
         delivery_address: b.delivery_address,
-        rental_fee: b.rental_fee,
+        rental_fee: itemRentalFee,
         cleaning_fee: b.cleaning_fee,
         delivery_fee: itemDeliveryFee,
         deposit: b.deposit,
@@ -183,6 +217,9 @@ export async function POST(req: Request) {
         is_cart: true,
         booking_ids: insertedBookingIds,
         item_count: preparedBookings.length,
+        referral_code: appliedReferralCode,
+        discount_applied: effectiveDiscount,
+        is_bundle: bundleCheck.isBundle,
       },
     });
 

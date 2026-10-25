@@ -3,6 +3,8 @@ import { requireUser } from "@/lib/auth";
 import { confirmAllBookings } from "@/lib/bookings";
 import { naira, niceDate } from "@/lib/format";
 import { Icon } from "@/components/Icon";
+import { PushNotificationManager } from "@/components/PushNotificationManager";
+import { generateUserReferralCode, getWhatsAppReferralLink } from "@/lib/referrals";
 
 export const dynamic = "force-dynamic";
 
@@ -98,6 +100,46 @@ export default async function Verify({ searchParams }: { searchParams: Promise<{
             <span>Includes 100% Refundable Deposit</span>
             <span style={{ color: "var(--grade-a)", fontWeight: 600 }}>{naira(totalDeposit)}</span>
           </div>
+        </div>
+
+        {/* Smart Push Notification Reminders */}
+        <PushNotificationManager
+          booking={{
+            id: primaryBooking.id,
+            event_date: primaryBooking.event_date,
+            start_date: primaryBooking.start_date,
+            end_date: primaryBooking.end_date,
+            pickup_code: primaryBooking.pickup_code,
+            delivery: primaryBooking.delivery,
+            item_title: itemMap.get(primaryBooking.item_id)?.title,
+            deposit: totalDeposit,
+          }}
+        />
+
+        {/* Invite a Friend & Earn ₦500 */}
+        <div
+          className="box"
+          style={{
+            background: "linear-gradient(135deg, rgba(22, 83, 55, 0.08) 0%, rgba(212, 175, 55, 0.08) 100%)",
+            borderColor: "rgba(22, 83, 55, 0.3)",
+            padding: 16,
+            textAlign: "center",
+          }}
+        >
+          <span style={{ fontSize: "1.4rem" }}>🎁</span>
+          <h3 style={{ fontSize: "1.05rem", margin: "4px 0" }}>Invite a Friend &amp; Earn ₦500</h3>
+          <p className="tiny muted" style={{ margin: "0 0 12px" }}>
+            Attending this owambe with friends? Share your invite code <strong>{generateUserReferralCode(user.id)}</strong>. They get ₦500 off, and you earn ₦500 off your next rental!
+          </p>
+          <a
+            href={getWhatsAppReferralLink(generateUserReferralCode(user.id))}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn small"
+            style={{ background: "#25D366", color: "#fff", borderColor: "#25D366", display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
+            <span>Share Invite on WhatsApp →</span>
+          </a>
         </div>
       </div>
 

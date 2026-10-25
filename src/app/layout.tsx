@@ -8,6 +8,7 @@ import { CartProvider } from "@/context/CartContext";
 import { CartDrawer } from "@/components/CartDrawer";
 import { CartButton } from "@/components/CartButton";
 import { SupportWidget } from "@/components/SupportWidget";
+import { ReferralBanner } from "@/components/ReferralBanner";
 
 export const metadata: Metadata = {
   title: "Owambe Closet – Luxury Traditional Attire Rental | Lagos",
@@ -42,9 +43,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body>
         <CartProvider>
+          <ReferralBanner />
           <div className="shell">
             <header className="topbar">
               <Link href="/" className="brand-logo" aria-label="Owambe Closet Home">

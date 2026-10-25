@@ -45,8 +45,14 @@ export function ItemCard({
       </div>
 
       <div className="card-details">
-        <div className="card-category">
-          {item.category ?? "Owambe Look"}
+        <div className="row between" style={{ alignItems: "center", marginBottom: 2 }}>
+          <div className="card-category">
+            {item.category ?? "Owambe Look"}
+          </div>
+          <span style={{ fontSize: "0.78rem", color: "#D4AF37", fontWeight: 700, display: "flex", alignItems: "center", gap: 3 }}>
+            <span>★</span>
+            <span style={{ color: "var(--ink)" }}>4.9</span>
+          </span>
         </div>
 
         <h3 className="card-title">{item.title}</h3>

@@ -1,0 +1,25 @@
+{
+  "name": "Owambe Closet – Luxury Traditional Attire & Event Rental",
+  "short_name": "Owambe Closet",
+  "description": "Lagos premier wardrobe sharing marketplace. Rent Aso-ebi, Agbada, Auto-Gele, Shoes, and Event Essentials.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0D0D0E",
+  "theme_color": "#165337",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["shopping", "lifestyle", "fashion"]
+}

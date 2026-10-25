@@ -15,6 +15,8 @@ import { Gallery } from "./Gallery";
 import { BookingForm } from "./BookingForm";
 import { SaveButton } from "./SaveButton";
 import { FitChecker } from "@/components/FitChecker";
+import { CompleteTheLook } from "@/components/CompleteTheLook";
+import { ReviewsSection } from "@/components/ReviewsSection";
 
 export default async function ItemPage({
   params,
@@ -382,6 +384,13 @@ export default async function ItemPage({
             </Link>
           ) : null}
 
+          {/* Complete the Look — Outfit Bundle Builder */}
+          {!isVenueCategory(item.category) &&
+            !isEquipmentCategory(item.category) &&
+            !isServiceCategory(item.category) && (
+            <CompleteTheLook currentItem={item} />
+          )}
+
           {/* Trust Footnotes */}
           <div className="stack g8 small muted" style={{ paddingTop: 8 }}>
             <div className="row g8" style={{ alignItems: "flex-start" }}>
@@ -409,6 +418,9 @@ export default async function ItemPage({
               </span>
             </div>
           </div>
+
+          {/* Renter Reviews & Ratings */}
+          <ReviewsSection itemId={item.id} itemTitle={item.title} />
         </div>
       </div>
     </div>

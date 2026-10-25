@@ -232,6 +232,81 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
         </section>
       )}
 
+      {/* Feature Highlights: Bundle Builder & Referral Program */}
+      {!isFiltered && (
+        <section
+          className="feature-highlights-row"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: 14,
+            marginBottom: 24,
+          }}
+        >
+          {/* Bundle Builder Highlight */}
+          <Link
+            href="/bundles"
+            className="box"
+            style={{
+              padding: "16px 18px",
+              background: "linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(22, 83, 55, 0.08) 100%)",
+              borderColor: "rgba(212, 175, 55, 0.35)",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              textDecoration: "none",
+              color: "inherit",
+              borderRadius: "var(--radius-lg)",
+            }}
+          >
+            <div>
+              <div className="row g6" style={{ alignItems: "center", marginBottom: 3 }}>
+                <span style={{ fontSize: "1.1rem" }}>✨</span>
+                <strong style={{ fontSize: "0.95rem", color: "var(--ink)" }}>Outfit Bundle Builder</strong>
+                <span className="pill ok" style={{ fontSize: "0.68rem" }}>Save 15%</span>
+              </div>
+              <p className="tiny muted" style={{ margin: 0 }}>
+                Pair Aso-ebi + Auto-Gele + Shoes + Beads as a discounted complete look.
+              </p>
+            </div>
+            <span style={{ fontSize: "1.2rem", color: "var(--accent-gold)", fontWeight: 700, marginLeft: 8 }}>
+              →
+            </span>
+          </Link>
+
+          {/* Referral / Invite System Highlight */}
+          <Link
+            href="/me?tab=referrals"
+            className="box"
+            style={{
+              padding: "16px 18px",
+              background: "linear-gradient(135deg, rgba(22, 83, 55, 0.1) 0%, rgba(30, 58, 138, 0.08) 100%)",
+              borderColor: "rgba(22, 83, 55, 0.3)",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              textDecoration: "none",
+              color: "inherit",
+              borderRadius: "var(--radius-lg)",
+            }}
+          >
+            <div>
+              <div className="row g6" style={{ alignItems: "center", marginBottom: 3 }}>
+                <span style={{ fontSize: "1.1rem" }}>🎁</span>
+                <strong style={{ fontSize: "0.95rem", color: "var(--ink)" }}>Invite a Friend, Earn ₦500</strong>
+                <span className="pill" style={{ fontSize: "0.68rem", background: "rgba(22, 83, 55, 0.15)", color: "var(--grade-a)" }}>₦500 Off</span>
+              </div>
+              <p className="tiny muted" style={{ margin: 0 }}>
+                Give friends ₦500 off their first rental and earn ₦500 credit on your next look.
+              </p>
+            </div>
+            <span style={{ fontSize: "1.2rem", color: "var(--grade-a)", fontWeight: 700, marginLeft: 8 }}>
+              →
+            </span>
+          </Link>
+        </section>
+      )}
+
       {/* Unified Search & Filter Toolbar */}
       <div id="catalog" className="filter-toolbar">
         <form action="/" method="get" className="search-hub-row" role="search">

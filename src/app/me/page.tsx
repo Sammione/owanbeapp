@@ -9,9 +9,13 @@ import { BankSettingsForm } from "./BankSettingsForm";
 import { setListingStatus } from "./actions";
 import { PersonaSwitcher, type PersonaMode } from "@/components/PersonaSwitcher";
 import { Icon } from "@/components/Icon";
+import { ReferralsHub } from "@/components/ReferralsHub";
+import { PushNotificationManager } from "@/components/PushNotificationManager";
+import { generateUserReferralCode } from "@/lib/referrals";
 
 const RENTER_TABS = [
   { key: "rentals", label: "My Rentals" },
+  { key: "referrals", label: "Invite & Earn ₦500" },
   { key: "saved", label: "Saved Outfits & Shoes" },
   { key: "profile", label: "Account Profile" },
 ] as const;
@@ -66,35 +70,84 @@ export default async function Me({
       .in("status", ["paid", "out", "returned", "completed", "conflict"])
       .order("event_date", { ascending: false });
     const rows = data ?? [];
-    body = rows.length ? (
-      <div className="stack g10">
-        {rows.map((b) => {
-          const it = one(b.item as Rel<{ title: string; photos: string[] }>);
-          const [label, tone] = BOOKING_LABEL[b.status] ?? [b.status, ""];
-          return (
-            <Link key={b.id} href={`/items/${b.item_id}`} className="listrow">
-              <Photo src={it?.photos?.[0]} alt={it?.title ?? "Outfit"} className="thumb" />
-              <div className="stack g4" style={{ flex: 1, minWidth: 0 }}>
-                <div className="row between g8"><strong className="small">{it?.title}</strong><span className={`pill ${tone}`}>{label}</span></div>
-                <span className="small muted">Event {niceDate(b.event_date)} · return by {niceDate(b.end_date)}</span>
-                {["paid", "out"].includes(b.status) && <span className="small">Pickup code <strong>{b.pickup_code}</strong></span>}
-                {b.status === "completed" && (
-                  <span className="small muted">
-                    Deposit refunded {naira(b.deposit_refund ?? b.deposit)}
-                    {(b.late_fee || b.damage_charge) ? ` (late fee ${naira(b.late_fee)}, damage ${naira(b.damage_charge)})` : ""}
-                  </span>
-                )}
-              </div>
-            </Link>
-          );
-        })}
+    body = (
+      <div className="stack g14">
+        {/* Smart Push Notifications Widget for upcoming rentals */}
+        <PushNotificationManager
+          booking={
+            rows[0]
+              ? {
+                  id: rows[0].id,
+                  event_date: rows[0].event_date,
+                  start_date: rows[0].start_date,
+                  end_date: rows[0].end_date,
+                  pickup_code: rows[0].pickup_code,
+                  delivery: rows[0].delivery,
+                  item_title: one(rows[0].item as Rel<{ title: string; photos: string[] }>)?.title,
+                  deposit: rows[0].deposit,
+                }
+              : null
+          }
+        />
+
+        {rows.length ? (
+          <div className="stack g10">
+            {rows.map((b) => {
+              const it = one(b.item as Rel<{ title: string; photos: string[] }>);
+              const [label, tone] = BOOKING_LABEL[b.status] ?? [b.status, ""];
+              return (
+                <div key={b.id} className="listrow between" style={{ alignItems: "center" }}>
+                  <Link href={`/items/${b.item_id}`} style={{ display: "flex", gap: 12, flex: 1, minWidth: 0, textDecoration: "none", color: "inherit" }}>
+                    <Photo src={it?.photos?.[0]} alt={it?.title ?? "Outfit"} className="thumb" />
+                    <div className="stack g4" style={{ flex: 1, minWidth: 0 }}>
+                      <div className="row between g8">
+                        <strong className="small">{it?.title}</strong>
+                        <span className={`pill ${tone}`}>{label}</span>
+                      </div>
+                      <span className="small muted">Event {niceDate(b.event_date)} · return by {niceDate(b.end_date)}</span>
+                      {["paid", "out"].includes(b.status) && <span className="small">Pickup code <strong>{b.pickup_code}</strong></span>}
+                      {b.status === "completed" && (
+                        <span className="small muted">
+                          Deposit refunded {naira(b.deposit_refund ?? b.deposit)}
+                          {(b.late_fee || b.damage_charge) ? ` (late fee ${naira(b.late_fee)}, damage ${naira(b.damage_charge)})` : ""}
+                        </span>
+                      )}
+                    </div>
+                  </Link>
+
+                  {/* Review / Rate CTA */}
+                  <div style={{ marginLeft: 8 }}>
+                    <Link
+                      href={`/items/${b.item_id}`}
+                      className="btn small ghost"
+                      style={{ fontSize: "0.78rem", whiteSpace: "nowrap" }}
+                    >
+                      ★ Rate Look
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="empty">
+            <strong>No rentals yet.</strong>
+            <p className="muted">When you rent an outfit, your pickup code and return date show up here.</p>
+            <Link href="/" className="btn small">Find an outfit</Link>
+          </div>
+        )}
       </div>
-    ) : (
-      <div className="empty">
-        <strong>No rentals yet.</strong>
-        <p className="muted">When you rent an outfit, your pickup code and return date show up here.</p>
-        <Link href="/" className="btn small">Find an outfit</Link>
-      </div>
+    );
+  }
+
+  if (tab === "referrals") {
+    const userRefCode = generateUserReferralCode(user.id, profile?.full_name);
+    body = (
+      <ReferralsHub
+        referralCode={userRefCode}
+        userName={profile?.full_name}
+        credits={500}
+      />
     );
   }
 
