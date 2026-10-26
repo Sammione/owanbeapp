@@ -1,5 +1,5 @@
 -- ============================================================================
--- OWAMBE CLOSET: REVIEWS, RATINGS, AND REFERRAL/INVITE SYSTEM
+-- OWANBEFIT: REVIEWS, RATINGS, AND REFERRAL/INVITE SYSTEM
 -- ============================================================================
 
 -- 1. PROFILES EXTENSION (Referral Code & Credits)

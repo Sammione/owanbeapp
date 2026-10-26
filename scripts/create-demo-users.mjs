@@ -40,10 +40,10 @@ const admin = createClient(SUPABASE_URL, SERVICE_KEY, {
 
 const DEMO_ACCOUNTS = [
   {
-    email: "admin@owambecloset.com",
+    email: "admin@owanbefit.com",
     password: "OwambeAdmin2026!",
     profile: {
-      full_name: "Owambe Admin / Staff",
+      full_name: "OwanbeFit Admin / Staff",
       phone: "08012345678",
       area: "Ikotun",
       role: "admin",
@@ -51,7 +51,7 @@ const DEMO_ACCOUNTS = [
     },
   },
   {
-    email: "borrower@owambecloset.com",
+    email: "borrower@owanbefit.com",
     password: "OwambeBorrower2026!",
     profile: {
       full_name: "Chioma Adebayo (Borrower)",
@@ -62,7 +62,7 @@ const DEMO_ACCOUNTS = [
     },
   },
   {
-    email: "vendor@owambecloset.com",
+    email: "vendor@owanbefit.com",
     password: "OwambeVendor2026!",
     profile: {
       full_name: "Kudirat Balogun (Vendor)",
@@ -76,7 +76,7 @@ const DEMO_ACCOUNTS = [
     },
   },
   {
-    email: "hallowner@owambecloset.com",
+    email: "hallowner@owanbefit.com",
     password: "OwambeHall2026!",
     profile: {
       full_name: "Babatunde Adeleke (Venue Manager)",

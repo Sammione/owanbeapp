@@ -11,7 +11,7 @@ function safeNext(n: string | null) {
 const DEMO_PERSONAS = [
   {
     roleTitle: "Platform Administrator & Hub Manager",
-    email: "admin@owambecloset.com",
+    email: "admin@owanbefit.com",
     password: "OwambeAdmin2026!",
     desc: "Inspect and approve incoming listings, handle pick-ups, and process security deposit refunds.",
     badge: "Staff Portal",
@@ -20,7 +20,7 @@ const DEMO_PERSONAS = [
   },
   {
     roleTitle: "Event Host & Borrower",
-    email: "borrower@owambecloset.com",
+    email: "borrower@owanbefit.com",
     password: "OwambeBorrower2026!",
     desc: "Browse designer traditional wear, luxury footwear, event equipment, and test Paystack checkout.",
     badge: "Borrower Portal",
@@ -29,7 +29,7 @@ const DEMO_PERSONAS = [
   },
   {
     roleTitle: "Wardrobe Partner & Equipment Vendor",
-    email: "vendor@owambecloset.com",
+    email: "vendor@owanbefit.com",
     password: "OwambeVendor2026!",
     desc: "List luxury attire (70%), coolers and party pots (80%), catering packages, and manage NUBAN payouts.",
     badge: "Vendor Portal",
@@ -38,7 +38,7 @@ const DEMO_PERSONAS = [
   },
   {
     roleTitle: "Event Hall & Marquee Venue Manager",
-    email: "hallowner@owambecloset.com",
+    email: "hallowner@owanbefit.com",
     password: "OwambeHall2026!",
     desc: "Showcase 5 hall photos, manage dates, track direct WhatsApp tour leads, and manage ₦7,500/mo token subscription.",
     badge: "Venue Portal",
@@ -198,10 +198,10 @@ function LoginInner() {
             Show demo passwords & credentials
           </summary>
           <div style={{ marginTop: 8, padding: 8, background: "rgba(0,0,0,0.03)", borderRadius: 6 }} className="stack g4">
-            <div><strong>Admin:</strong> <code>admin@owambecloset.com</code> · Pass: <code>OwambeAdmin2026!</code></div>
-            <div><strong>Borrower:</strong> <code>borrower@owambecloset.com</code> · Pass: <code>OwambeBorrower2026!</code></div>
-            <div><strong>Vendor:</strong> <code>vendor@owambecloset.com</code> · Pass: <code>OwambeVendor2026!</code></div>
-            <div><strong>Hall Manager:</strong> <code>hallowner@owambecloset.com</code> · Pass: <code>OwambeHall2026!</code></div>
+            <div><strong>Admin:</strong> <code>admin@owanbefit.com</code> · Pass: <code>OwambeAdmin2026!</code></div>
+            <div><strong>Borrower:</strong> <code>borrower@owanbefit.com</code> · Pass: <code>OwambeBorrower2026!</code></div>
+            <div><strong>Vendor:</strong> <code>vendor@owanbefit.com</code> · Pass: <code>OwambeVendor2026!</code></div>
+            <div><strong>Hall Manager:</strong> <code>hallowner@owanbefit.com</code> · Pass: <code>OwambeHall2026!</code></div>
             <div><strong>Owner Admin:</strong> <code>sammione531@gmail.com</code> · Pass: <code>OwambeAdmin2026!</code></div>
           </div>
         </details>

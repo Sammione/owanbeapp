@@ -144,7 +144,7 @@ export default async function ItemPage({
             <div className="stack" style={{ flex: 1 }}>
               <div className="row g6" style={{ alignItems: "center" }}>
                 <strong className="small">
-                  {isOwner ? "Your Listing (Private Wardrobe)" : "Verified Owambe Partner · Lagos"}
+                  {isOwner ? "Your Listing (Private Wardrobe)" : "Verified OwanbeFit Partner · Lagos"}
                 </strong>
               </div>
               <span className="muted tiny">
@@ -277,7 +277,7 @@ export default async function ItemPage({
                   <span style={{ color: "var(--grade-a, #165337)" }}>Paystack Escrow Protection</span>
                 </div>
                 <p className="tqc-desc" style={{ color: "var(--ink-secondary)" }}>
-                  Your payment is safely held by Owambe Closet. The caterer / vendor is only paid after your event is successfully delivered to your satisfaction.
+                  Your payment is safely held by OwanbeFit. The caterer / vendor is only paid after your event is successfully delivered to your satisfaction.
                 </p>
               </div>
             </div>

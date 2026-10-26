@@ -16,7 +16,7 @@ export function ReferralsHub({
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
-  const origin = typeof window !== "undefined" ? window.location.origin : "https://owambe-closet.com";
+  const origin = typeof window !== "undefined" ? window.location.origin : "https://owanbefit.com";
   const inviteUrl = `${origin}/?ref=${encodeURIComponent(referralCode)}`;
   const waUrl = getWhatsAppReferralLink(referralCode, origin);
 

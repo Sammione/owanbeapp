@@ -365,7 +365,7 @@ export function CartDrawer() {
                     <input
                       type="text"
                       className="input small"
-                      placeholder="e.g. OWB-KEMI or OWAMBE500"
+                      placeholder="e.g. FIT-KEMI or OWANBEFIT"
                       value={promoInput}
                       onChange={(e) => setPromoInput(e.target.value)}
                       style={{ flex: 1, textTransform: "uppercase" }}

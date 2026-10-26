@@ -1,5 +1,5 @@
-// Owambe Closet PWA Service Worker & Push Notification Handler
-const CACHE_NAME = "owambe-cache-v1";
+// OwanbeFit PWA Service Worker & Push Notification Handler
+const CACHE_NAME = "owanbefit-cache-v1";
 const STATIC_ASSETS = ["/", "/manifest.json", "/logo.png"];
 
 self.addEventListener("install", (event) => {
@@ -25,7 +25,7 @@ self.addEventListener("activate", (event) => {
 // Push notification event listener
 self.addEventListener("push", (event) => {
   let data = {
-    title: "Owambe Closet Rental Reminder",
+    title: "OwanbeFit Rental Reminder",
     body: "You have an upcoming event milestone update.",
     url: "/me?tab=rentals",
   };

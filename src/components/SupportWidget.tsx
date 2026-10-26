@@ -55,7 +55,7 @@ export function SupportWidget() {
     const catObj = CATEGORIES.find((c) => c.id === category);
 
     const ticketLines = [
-      `*OWAMBE CLOSET — SUPPORT & COMPLAINT TICKET*`,
+      `*OWANBEFIT — SUPPORT & COMPLAINT TICKET*`,
       `------------------------------------------`,
       `*Issue Type:* ${catObj?.label || "General Issue"}`,
       name ? `*Customer Name:* ${name}` : null,
@@ -64,7 +64,7 @@ export function SupportWidget() {
       `*Details:*`,
       details.trim() || "Customer requested immediate support via website.",
       `------------------------------------------`,
-      `_Submitted from Owambe Closet Platform_`,
+      `_Submitted from OwanbeFit Platform_`,
     ]
       .filter(Boolean)
       .join("\n");
@@ -115,7 +115,7 @@ export function SupportWidget() {
                 <div className="row g6" style={{ alignItems: "center" }}>
                   <span className="support-pulse-dot" style={{ position: "static" }} />
                   <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 700 }}>
-                    Owambe Support &amp; Help Desk
+                    OwanbeFit Support &amp; Help Desk
                   </h3>
                 </div>
                 <p className="tiny muted" style={{ margin: "2px 0 0" }}>

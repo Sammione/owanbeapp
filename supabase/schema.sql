@@ -1,5 +1,5 @@
 -- =====================================================================
--- Owambe Closet – database schema
+-- OwanbeFit – database schema
 -- Run this whole file once in Supabase → SQL Editor → New query.
 -- =====================================================================
 

@@ -1,4 +1,4 @@
-# Owambe Closet
+# OwanbeFit
 
 Rent owambe outfits near you, or earn from the ones in your wardrobe.
 A mobile-first web app built with **Next.js**, **Supabase** and **Paystack**.

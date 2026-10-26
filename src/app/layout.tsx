@@ -11,7 +11,7 @@ import { SupportWidget } from "@/components/SupportWidget";
 import { ReferralBanner } from "@/components/ReferralBanner";
 
 export const metadata: Metadata = {
-  title: "Owambe Closet – Luxury Traditional Attire Rental | Lagos",
+  title: "OwanbeFit – Luxury Traditional Attire Rental | Lagos",
   description:
     "Rent bespoke Aso-ebi, Agbada, pre-tied Gele, and royal coral beads across Ikotun, Egbeda, and Igando. Inspected and dry-cleaned at neighborhood hubs.",
   icons: {
@@ -52,16 +52,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <ReferralBanner />
           <div className="shell">
             <header className="topbar">
-              <Link href="/" className="brand-logo" aria-label="Owambe Closet Home">
+              <Link href="/" className="brand-logo" aria-label="OwanbeFit Home">
                 <Image
                   src="/logo.png"
-                  alt="Owambe Closet"
+                  alt="OwanbeFit"
                   width={44}
                   height={44}
                   className="brand-logo-img"
                   priority
                 />
-                <span className="brand-name">OWAMBE CLOSET</span>
+                <span className="brand-name">OWANBEFIT</span>
               </Link>
 
               <TopLinks signedIn={!!user} staff={staff} />
@@ -85,10 +85,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <footer className="luxury-footer">
             <div className="footer-top">
               <div className="footer-brand">
-                <Link href="/" className="footer-logo-link" aria-label="Owambe Closet Home">
+                <Link href="/" className="footer-logo-link" aria-label="OwanbeFit Home">
                   <Image
                     src="/logo.png"
-                    alt="Owambe Closet"
+                    alt="OwanbeFit"
                     width={80}
                     height={80}
                     className="footer-logo-img"
@@ -126,7 +126,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   <Link href="/me?mode=lender&tab=bank">Payout Bank Setup</Link>
                 </div>
                 <div className="footer-col">
-                  <h4>Platform Guarantees</h4>
+                  <h4>Platform & Story</h4>
+                  <Link href="/about" style={{ color: "var(--accent, #D4AF37)", fontWeight: 600 }}>About Us & Founders</Link>
                   <p className="small muted">Hub Quality & Hygiene Audit</p>
                   <p className="small muted">Heavy-Duty Van Delivery</p>
                   <p className="small muted">Paystack Escrow Protection</p>
@@ -137,7 +138,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
             <div className="footer-bottom">
               <span className="copyright">
-                © {new Date().getFullYear()} Owambe Closet. Lagos, Nigeria.
+                © {new Date().getFullYear()} OwanbeFit. Lagos, Nigeria.
               </span>
               <span className="paystack-badge">
                 Payments & Automated Refunds powered by Paystack

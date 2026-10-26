@@ -151,7 +151,7 @@ export function BookingForm({
           </div>
           <a
             href={`https://wa.me/2348033221100?text=${encodeURIComponent(
-              `Hello, I saw your hall "${title || "Event Hall"}" on Owambe Closet. I would like to schedule a physical tour and check availability for my event on ${eventDate ? niceDate(eventDate) : "an upcoming date"}.`
+              `Hello, I saw your hall "${title || "Event Hall"}" on OwanbeFit. I would like to schedule a physical tour and check availability for my event on ${eventDate ? niceDate(eventDate) : "an upcoming date"}.`
             )}`}
             target="_blank"
             rel="noopener noreferrer"
@@ -224,7 +224,7 @@ export function BookingForm({
             <strong>{naira(total)}</strong>
           </div>
           <span className="tiny muted" style={{ display: "block", marginTop: 6 }}>
-            * Your ₦50,000 commitment deposit is held safely in Owambe Escrow until physical inspection is concluded. Balance paid before event date.
+            * Your ₦50,000 commitment deposit is held safely in OwanbeFit Escrow until physical inspection is concluded. Balance paid before event date.
           </span>
         </div>
       ) : (

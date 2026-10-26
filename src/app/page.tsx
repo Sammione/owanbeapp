@@ -487,11 +487,11 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
         )
       )}
 
-      {/* The Owambe Standard (Clean 3-Step Process) */}
+      {/* The OwanbeFit Standard (Clean 3-Step Process) */}
       <section className="standard-section">
         <div className="standard-header">
           <span className="hero-kicker">How It Works</span>
-          <h2>The Owambe Closet standard</h2>
+          <h2>The OwanbeFit standard</h2>
           <p className="muted">
             High-end traditional attire rented directly between verified wardrobe owners and party guests in Lagos.
           </p>
@@ -524,7 +524,7 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
         </div>
       </section>
 
-      {/* Closet Owner Callout */}
+      {/* Wardrobe Owner Callout */}
       <section className="owner-banner">
         <div>
           <h2>Monetize your wardrobe</h2>

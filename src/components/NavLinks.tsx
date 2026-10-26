@@ -13,6 +13,7 @@ export function TopLinks({ signedIn, staff }: { signedIn: boolean; staff: boolea
       <Link href="/bundles" className={on("/bundles") ? "active" : ""} style={{ color: "var(--accent-gold)", fontWeight: 600 }}>
         ✨ Bundles (15% Off)
       </Link>
+      <Link href="/about" className={on("/about") ? "active" : ""}>About Us</Link>
       <Link href="/me" className={on("/me") ? "active" : ""}>My account</Link>
       {staff && <Link href="/hub" className={on("/hub") ? "active" : ""}>Hub</Link>}
       <Link href="/list" className="btn small">List item</Link>

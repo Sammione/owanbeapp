@@ -1,5 +1,5 @@
 /* ==========================================================================
-   OWAMBE CLOSET — LUXURY FASHION RENTAL DESIGN SYSTEM
+   OWANBEFIT — LUXURY FASHION RENTAL DESIGN SYSTEM
    Bespoke, refined, editorial e-commerce aesthetic.
    Crafted with the restraint, precision, and standards of top luxury
    fashion platforms (SSENSE, Farfetch, Vestiaire, MatchesFashion).
@@ -2511,6 +2511,348 @@ input[type="number"] {
     padding: 16px;
   }
 }
+
+/* ==========================================================================
+   ABOUT US PAGE — CLEAN EDITORIAL & FOUNDERS STYLING
+   ========================================================================== */
+
+.about-page {
+  padding-bottom: 72px;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.about-hero-clean {
+  padding: 64px 20px 48px;
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border);
+}
+
+.about-hero-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.about-title-clean {
+  font-family: var(--font-serif, "Playfair Display", serif);
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+}
+
+.about-lead-clean {
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  line-height: 1.6;
+  color: var(--ink-secondary);
+  margin-bottom: 32px;
+}
+
+.about-actions-clean {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Facts Bar */
+.about-facts-bar {
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+  padding: 24px 20px;
+}
+
+.about-facts-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+.fact-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fact-title {
+  font-weight: 700;
+  font-size: 0.98rem;
+  color: var(--accent-gold);
+}
+
+.fact-sub {
+  font-size: 0.84rem;
+  color: var(--ink-muted);
+}
+
+/* Prose & Article */
+.about-article-section,
+.about-founders-clean,
+.about-steps-section,
+.about-hubs-section {
+  padding: 56px 20px 0;
+}
+
+.about-article-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.about-article-container h2 {
+  font-family: var(--font-serif, "Playfair Display", serif);
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+
+.about-prose p {
+  font-size: 1.02rem;
+  line-height: 1.75;
+  color: var(--ink-secondary);
+  margin-bottom: 18px;
+}
+
+/* Founders Grid */
+.founders-clean-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.founder-clean-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 24px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+}
+
+.founder-clean-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.founder-initials-badge {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #165337;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif, "Playfair Display", serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.founder-initials-badge.samuel-badge {
+  background: #0f3824;
+  border: 2px solid var(--accent-gold);
+}
+
+.founder-clean-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 2px;
+}
+
+.founder-clean-role {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.founder-clean-body p {
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: var(--ink-secondary);
+  margin-bottom: 12px;
+}
+
+.founder-focus-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.founder-focus-tags span {
+  font-size: 0.74rem;
+  font-weight: 600;
+  background: var(--bg-inset);
+  color: var(--ink);
+  border: 1px solid var(--border-subtle);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+/* Together Box */
+.founders-together-box {
+  margin-top: 32px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent-gold);
+  border-radius: 14px;
+  padding: 24px 28px;
+  box-shadow: var(--shadow-subtle);
+}
+
+.together-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.together-text {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--ink);
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Steps Grid */
+.about-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.step-card-clean {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 20px;
+  box-shadow: var(--shadow-subtle);
+}
+
+.step-number {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  line-height: 28px;
+  text-align: center;
+  border-radius: 50%;
+  background: var(--accent-gold-soft);
+  color: var(--accent-gold);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  font-weight: 800;
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+}
+
+.step-card-clean h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.step-card-clean p {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--ink-secondary);
+  margin: 0;
+}
+
+/* Hubs Card */
+.hubs-card-clean {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px 28px;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 32px;
+  align-items: center;
+  box-shadow: var(--shadow-card);
+}
+
+.hubs-info h3 {
+  font-family: var(--font-serif, "Playfair Display", serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 6px 0 10px;
+  color: var(--ink);
+}
+
+.hubs-info p {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--ink-secondary);
+  margin-bottom: 14px;
+}
+
+.hubs-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hubs-list li {
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.hubs-list li strong {
+  color: var(--accent-gold);
+}
+
+.hubs-contact-box {
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px 20px;
+}
+
+.hubs-contact-box h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--ink);
+}
+
+@media (max-width: 768px) {
+  .about-hero-clean {
+    padding: 40px 16px 36px;
+  }
+  .about-facts-inner {
+    grid-template-columns: 1fr 1fr;
+  }
+  .hubs-card-clean {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 24px 18px;
+  }
+}
+
+
+
 
 
 

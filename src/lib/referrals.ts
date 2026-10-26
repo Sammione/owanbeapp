@@ -1,5 +1,5 @@
 /**
- * Referral / Invite System for Owambe Closet
+ * Referral / Invite System for OwanbeFit
  * "Invite a friend, earn ₦500 off your next rental"
  */
 
@@ -23,11 +23,11 @@ export function generateUserReferralCode(userId: string, name?: string | null): 
     const clean = name.trim().split(/\s+/)[0].toUpperCase().replace(/[^A-Z0-9]/g, "");
     if (clean.length >= 3) {
       const suffix = userId.replace(/[^a-zA-Z0-9]/g, "").slice(0, 3).toUpperCase();
-      return `OWB-${clean}-${suffix}`;
+      return `FIT-${clean}-${suffix}`;
     }
   }
   const cleanId = userId.replace(/[^a-zA-Z0-9]/g, "").slice(0, 6).toUpperCase();
-  return `OWB-${cleanId || "FRIEND"}`;
+  return `FIT-${cleanId || "FRIEND"}`;
 }
 
 /**
@@ -52,6 +52,8 @@ export function isValidReferralCode(code: string, currentUserId?: string | null)
 
   // System promotional codes
   const PROMO_CODES: Record<string, number> = {
+    "OWANBEFIT": 500,
+    "OWANBEFIT500": 500,
     "OWAMBE500": 500,
     "OWAMBEWELCOME": 500,
     "INVITE500": 500,
@@ -67,7 +69,7 @@ export function isValidReferralCode(code: string, currentUserId?: string | null)
   }
 
   // Standard user referral code prefix
-  if (norm.startsWith("OWB-") && norm.length >= 7) {
+  if ((norm.startsWith("FIT-") || norm.startsWith("OWB-")) && norm.length >= 7) {
     if (currentUserId && generateUserReferralCode(currentUserId) === norm) {
       return {
         valid: false,
@@ -94,6 +96,6 @@ export function isValidReferralCode(code: string, currentUserId?: string | null)
  */
 export function getWhatsAppReferralLink(code: string, origin: string = ""): string {
   const inviteUrl = `${origin}/?ref=${encodeURIComponent(code)}`;
-  const text = `Hey! I'm using Owambe Closet to rent luxury Aso-ebi, Agbada & event essentials in Lagos without breaking the bank. Use my invite code *${code}* to get *₦500 OFF* your next rental booking here: ${inviteUrl}`;
+  const text = `Hey! I'm using OwanbeFit to rent luxury Aso-ebi, Agbada & event essentials in Lagos without breaking the bank. Use my invite code *${code}* to get *₦500 OFF* your next rental booking here: ${inviteUrl}`;
   return `https://wa.me/?text=${encodeURIComponent(text)}`;
 }

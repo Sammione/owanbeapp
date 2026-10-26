@@ -1,5 +1,5 @@
 /**
- * Reviews & Ratings System for Owambe Closet
+ * Reviews & Ratings System for OwanbeFit
  * Renters leave star ratings after return — builds trust, surfaces quality items
  */
 

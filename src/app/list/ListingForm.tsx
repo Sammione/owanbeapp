@@ -255,7 +255,7 @@ export function ListingForm({
 
       let computedDesc = f.description.trim() || null;
       if (isVenue) {
-        computedDesc = `${computedDesc ? computedDesc + "\n\n" : ""}📍 Address: ${venueAddress || "Lagos"}\n📞 WhatsApp: ${venueWhatsApp || "Direct via Owambe Closet"}\n✨ Amenities: ${venueAmenities.join(", ")}`;
+        computedDesc = `${computedDesc ? computedDesc + "\n\n" : ""}📍 Address: ${venueAddress || "Lagos"}\n📞 WhatsApp: ${venueWhatsApp || "Direct via OwanbeFit"}\n✨ Amenities: ${venueAmenities.join(", ")}`;
       }
 
       const { error } = await supabase.from("items").insert({
@@ -388,7 +388,7 @@ export function ListingForm({
               ? "Verified Vendor & Escrow Protection"
               : isEquipment
               ? "Commercial Equipment Rental Fleet"
-              : "100% Anonymous & Protected Closet Sharing"}
+              : "100% Anonymous & Protected Wardrobe Sharing"}
           </strong>
           <span className="tiny muted">
             {isVenue
