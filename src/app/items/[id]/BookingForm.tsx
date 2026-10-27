@@ -8,6 +8,7 @@ import {
   isVenueCategory,
   isEquipmentCategory,
   isServiceCategory,
+  isSouvenirCategory,
   VENUE_INSPECTION_ESCROW_NGN,
 } from "@/lib/constants";
 import { addDays, naira, niceDate, todayISO } from "@/lib/format";
@@ -43,21 +44,25 @@ export function BookingForm({
 }) {
   const router = useRouter();
   const { addItem } = useCart();
-  const minDate = addDays(todayISO(), 2); // at least 2 days' notice for checks and delivery
-  const maxDate = addDays(todayISO(), 180); // up to 6 months ahead
-  const [eventDate, setEventDate] = useState("");
-  const [delivery, setDelivery] = useState(false);
-  const [address, setAddress] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
   const isVenue = isVenueCategory(category);
   const isEquipment = isEquipmentCategory(category);
   const isService = isServiceCategory(category);
+  const isSouvenir = isSouvenirCategory(category);
 
-  const deliveryFee = !delivery || isVenue ? 0 : isEquipment ? TRUCK_DELIVERY_FEE : isService ? 0 : DELIVERY_FEE;
-  const cleaningFee = isService || isVenue ? 0 : CLEANING_FEE;
-  const dep = isVenue ? VENUE_INSPECTION_ESCROW_NGN : isService ? 0 : deposit > 0 ? deposit : defaultDeposit(price);
+  const minDaysNotice = isSouvenir ? 5 : 2;
+  const minDate = addDays(todayISO(), minDaysNotice);
+  const maxDate = addDays(todayISO(), 180);
+  const [eventDate, setEventDate] = useState("");
+  const [delivery, setDelivery] = useState(isSouvenir);
+  const [address, setAddress] = useState("");
+  const [customText, setCustomText] = useState("");
+  const [proofPhone, setProofPhone] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const deliveryFee = !delivery || isVenue ? 0 : isEquipment ? TRUCK_DELIVERY_FEE : isService || isSouvenir ? 0 : DELIVERY_FEE;
+  const cleaningFee = isService || isVenue || isSouvenir ? 0 : CLEANING_FEE;
+  const dep = isVenue ? VENUE_INSPECTION_ESCROW_NGN : isService || isSouvenir ? 0 : deposit > 0 ? deposit : defaultDeposit(price);
   const total = isVenue ? VENUE_INSPECTION_ESCROW_NGN : price + cleaningFee + dep + deliveryFee;
 
   const clash = useMemo(() => {
@@ -89,7 +94,11 @@ export function BookingForm({
       setError("Someone already has it booked around that date. Try another date.");
       return;
     }
-    if ((delivery || isService) && address.trim().length < 8) {
+    if (isSouvenir && customText.trim().length < 3) {
+      setError("Please enter the couple/celebrant name or monogram to print.");
+      return;
+    }
+    if ((delivery || isService || isSouvenir) && address.trim().length < 8) {
       setError("Add the event venue or delivery address.");
       return;
     }
@@ -98,7 +107,13 @@ export function BookingForm({
       const res = await fetch("/api/paystack/initialize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ itemId, eventDate, delivery: delivery || isService, address: address.trim() }),
+        body: JSON.stringify({
+          itemId,
+          eventDate,
+          delivery: delivery || isService || isSouvenir,
+          address: address.trim(),
+          customDetails: isSouvenir ? `${customText} (WhatsApp: ${proofPhone})` : undefined,
+        }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Could not start payment.");
@@ -124,11 +139,15 @@ export function BookingForm({
         />
         <span className="hint">
           {eventDate
-            ? isVenue
+            ? isSouvenir
+              ? `Production scheduled. Target delivery 2 days prior (${niceDate(addDays(eventDate, -2))}).`
+              : isVenue
               ? `Inspection / Reservation requested for ${niceDate(eventDate)}.`
               : isService
               ? `Service scheduled for ${niceDate(eventDate)}.`
               : `Collect ${niceDate(addDays(eventDate, -1))}, return by ${niceDate(addDays(eventDate, 1))}.`
+            : isSouvenir
+            ? "Choose your party date. We require 5 days to laser-engrave, package, and deliver your batch."
             : isVenue
             ? "Choose your celebration date to check hall availability and schedule a walkthrough."
             : isService
@@ -137,6 +156,51 @@ export function BookingForm({
         </span>
         {clash && <span className="error" role="alert">Not available around that date. Please choose another.</span>}
       </div>
+
+      {isSouvenir && (
+        <div className="box" style={{ background: "rgba(212, 175, 55, 0.05)", borderColor: "rgba(212, 175, 55, 0.3)" }}>
+          <div className="row g8" style={{ alignItems: "center", marginBottom: 10 }}>
+            <Icon name="sparkles" size={18} stroke={2} />
+            <strong className="small" style={{ color: "var(--accent-gold, #D4AF37)" }}>Custom Souvenir Branding Details</strong>
+          </div>
+          <div className="field">
+            <label htmlFor="custom-text">Celebrant / Couple Names &amp; Details to Print</label>
+            <input
+              id="custom-text"
+              className="input"
+              value={customText}
+              onChange={(e) => setCustomText(e.target.value)}
+              placeholder="e.g. Tobi & Adeola 2026 (#TobiAdeola26)"
+              maxLength={120}
+            />
+            <span className="hint">We laser-engrave or foil-stamp these exact details onto your souvenirs &amp; gift boxes.</span>
+          </div>
+          <div className="field" style={{ marginTop: 10 }}>
+            <label htmlFor="proof-phone">WhatsApp Phone for 3D Proof Approval</label>
+            <input
+              id="proof-phone"
+              className="input"
+              type="tel"
+              value={proofPhone}
+              onChange={(e) => setProofPhone(e.target.value)}
+              placeholder="e.g. 080 3322 1100"
+              maxLength={20}
+            />
+            <span className="hint">Our production team sends a 3D digital mockup on WhatsApp before mass printing.</span>
+          </div>
+          <a
+            href={`https://wa.me/2348033221100?text=${encodeURIComponent(
+              `Hello owambeFit, I want to order custom souvenirs: "${title || "Souvenir Batch"}" for my event on ${eventDate ? niceDate(eventDate) : "an upcoming date"}. Names to print: ${customText || "[Pending]"}.`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn ghost block small"
+            style={{ borderColor: "#25D366", color: "#165337", marginTop: 12, textAlign: "center" }}
+          >
+            Chat with Souvenir Desk on WhatsApp
+          </a>
+        </div>
+      )}
 
       {isVenue ? (
         <div className="box" style={{ background: "rgba(37, 211, 102, 0.08)", borderColor: "rgba(37, 211, 102, 0.3)" }}>
@@ -151,7 +215,7 @@ export function BookingForm({
           </div>
           <a
             href={`https://wa.me/2348033221100?text=${encodeURIComponent(
-              `Hello, I saw your hall "${title || "Event Hall"}" on OwanbeFit. I would like to schedule a physical tour and check availability for my event on ${eventDate ? niceDate(eventDate) : "an upcoming date"}.`
+              `Hello, I saw your hall "${title || "Event Hall"}" on owambeFit. I would like to schedule a physical tour and check availability for my event on ${eventDate ? niceDate(eventDate) : "an upcoming date"}.`
             )}`}
             target="_blank"
             rel="noopener noreferrer"
@@ -161,7 +225,7 @@ export function BookingForm({
             Chat on WhatsApp for Free Tour
           </a>
         </div>
-      ) : !isService ? (
+      ) : !isService && !isSouvenir ? (
         <div className="field">
           <span className="label" id="get-label">How you’ll get it</span>
           <div className="seg" role="group" aria-labelledby="get-label">
@@ -177,20 +241,24 @@ export function BookingForm({
         </div>
       ) : (
         <div className="field">
-          <label htmlFor="addr">Event venue &amp; address</label>
+          <label htmlFor="addr">{isSouvenir ? "Delivery Venue or Doorstep Address" : "Event venue & address"}</label>
           <textarea
             id="addr"
             className="input"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            placeholder="Event Hall / Venue address, Landmark, Lagos"
+            placeholder={isSouvenir ? "Event Hall or Home Address, Landmark, Lagos" : "Event Hall / Venue address, Landmark, Lagos"}
             maxLength={300}
           />
-          <span className="hint">The catering/service team will arrive at this location 2 hours before your event.</span>
+          <span className="hint">
+            {isSouvenir
+              ? "All souvenir gift boxes are carefully packed in cartons and dispatched directly to this address."
+              : "The catering/service team will arrive at this location 2 hours before your event."}
+          </span>
         </div>
       )}
 
-      {!isService && !isVenue && delivery && (
+      {!isService && !isVenue && !isSouvenir && delivery && (
         <div className="field">
           <label htmlFor="addr">Delivery address</label>
           <textarea
@@ -204,7 +272,35 @@ export function BookingForm({
         </div>
       )}
 
-      {isVenue ? (
+      {isSouvenir ? (
+        <div className="box">
+          <div className="line">
+            <span>Custom Souvenir Batch</span>
+            <strong>{naira(price)}</strong>
+          </div>
+          <div className="line" style={{ color: "var(--grade-a, #165337)" }}>
+            <span>Digital 3D Design Proof Mockup</span>
+            <strong>FREE</strong>
+          </div>
+          <div className="line" style={{ color: "var(--grade-a, #165337)" }}>
+            <span>Gift Box Packaging &amp; Ribbons</span>
+            <strong>INCLUDED</strong>
+          </div>
+          <div className="line">
+            <span>Lagos Logistics &amp; Dispatch</span>
+            <strong style={{ color: "var(--grade-a, #165337)" }}>FREE</strong>
+          </div>
+          <div className="line" style={{ color: "var(--ink-secondary)" }}>
+            <span>Refundable Deposit</span>
+            <span>₦0 (Keepsake Gift)</span>
+          </div>
+          <div className="hr" />
+          <div className="line">
+            <strong>Total Order Value</strong>
+            <strong>{naira(total)}</strong>
+          </div>
+        </div>
+      ) : isVenue ? (
         <div className="box">
           <div className="line">
             <span>Venue Rental Fee (Full Day)</span>
@@ -224,7 +320,7 @@ export function BookingForm({
             <strong>{naira(total)}</strong>
           </div>
           <span className="tiny muted" style={{ display: "block", marginTop: 6 }}>
-            * Your ₦50,000 commitment deposit is held safely in OwanbeFit Escrow until physical inspection is concluded. Balance paid before event date.
+            * Your ₦50,000 commitment deposit is held safely in owambeFit Escrow until physical inspection is concluded. Balance paid before event date.
           </span>
         </div>
       ) : (
@@ -323,13 +419,17 @@ export function BookingForm({
           {loading
             ? "Opening Paystack…"
             : signedIn
-            ? isVenue
+            ? isSouvenir
+              ? `Order Custom Souvenirs (${naira(total)})`
+              : isVenue
               ? "Lock Date with Escrow (₦50,000)"
               : isService
               ? "Book Service via Escrow"
               : isEquipment
               ? "Rent Equipment via Paystack"
               : "Rent with Paystack"
+            : isSouvenir
+            ? "Sign in to order"
             : "Sign in to book"}
         </button>
       </div>

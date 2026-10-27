@@ -42,7 +42,7 @@ export function PushNotificationManager({
     setPermission(res);
     if (res === "granted") {
       await sendLocalNotification(
-        "🎉 OwanbeFit Alerts Activated!",
+        "🎉 owambeFit Alerts Activated!",
         "You’re all set to receive reminders 2 days before your event, day-of pickup, and return deadline.",
         "/me?tab=rentals"
       );

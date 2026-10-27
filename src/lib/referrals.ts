@@ -96,6 +96,6 @@ export function isValidReferralCode(code: string, currentUserId?: string | null)
  */
 export function getWhatsAppReferralLink(code: string, origin: string = ""): string {
   const inviteUrl = `${origin}/?ref=${encodeURIComponent(code)}`;
-  const text = `Hey! I'm using OwanbeFit to rent luxury Aso-ebi, Agbada & event essentials in Lagos without breaking the bank. Use my invite code *${code}* to get *₦500 OFF* your next rental booking here: ${inviteUrl}`;
+  const text = `Hey! I'm using owambeFit to rent luxury Aso-ebi, Agbada & event essentials in Lagos without breaking the bank. Use my invite code *${code}* to get *₦500 OFF* your next rental booking here: ${inviteUrl}`;
   return `https://wa.me/?text=${encodeURIComponent(text)}`;
 }

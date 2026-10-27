@@ -3,9 +3,9 @@ import Link from "next/link";
 import { Icon } from "@/components/Icon";
 
 export const metadata: Metadata = {
-  title: "About Us | OwanbeFit – Lagos",
+  title: "About Us | owambeFit – Lagos",
   description:
-    "Learn about OwanbeFit, founded by Olokunlade Olayemi Jadesola and Omolaiye Samuel Oluwatobi. A Lagos rental marketplace for traditional fashion, event halls, and celebration essentials.",
+    "Learn about owambeFit, founded by Olokunlade Olayemi Jadesola and Omolaiye Samuel Oluwatobi. A Lagos rental marketplace for traditional fashion, event halls, and celebration essentials.",
 };
 
 export default function AboutPage() {
@@ -20,7 +20,7 @@ export default function AboutPage() {
             Monetize your wardrobe.
           </h1>
           <p className="about-lead-clean">
-            OwanbeFit is a Lagos marketplace that connects guests attending parties and weddings with verified traditional attire, celebration venues, and party equipment.
+            owambeFit is a Lagos marketplace that connects guests attending parties and weddings with verified traditional attire, celebration venues, and party equipment.
           </p>
 
           <div className="about-actions-clean">
@@ -59,7 +59,7 @@ export default function AboutPage() {
       {/* Origin & Why We Started */}
       <section className="about-article-section">
         <div className="about-article-container">
-          <h2>Why we started OwanbeFit</h2>
+          <h2>Why we started owambeFit</h2>
           <div className="about-prose">
             <p>
               In Lagos, traditional events are an integral part of weekend life. Whether it is an intimate engagement, a church wedding, a milestone birthday, or a grand burial reception, people want to dress well and celebrate with family.
@@ -68,7 +68,7 @@ export default function AboutPage() {
               However, buying 5 yards of bespoke lace or high-grade guinea brocade, looking for a reliable tailor, and paying ₦50,000 to ₦150,000 for each event becomes financially unsustainable. The resulting garments are often worn for only four or five hours on a Saturday afternoon and then spend years hanging inside a wardrobe.
             </p>
             <p>
-              We built OwanbeFit to give people a straightforward alternative: rent clean, audited traditional outfits for a fraction of the cost of tailoring a new one. At the same time, people with quality clothes hanging in their closets can put them to work and earn recurring income.
+              We built owambeFit to give people a straightforward alternative: rent clean, audited traditional outfits for a fraction of the cost of tailoring a new one. At the same time, people with quality clothes hanging in their closets can put them to work and earn recurring income.
             </p>
           </div>
         </div>
@@ -115,7 +115,7 @@ export default function AboutPage() {
               </div>
               <div className="founder-clean-body">
                 <p>
-                  Samuel makes sure renting on OwanbeFit feels safe and simple. He looks after bookings, payments and refunds, so renters know their money is protected and owners know they’ll be paid. He works alongside Jadesola so every outfit she approves reaches you through a smooth, trusted process.
+                  Samuel makes sure renting on owambeFit feels safe and simple. He looks after bookings, payments and refunds, so renters know their money is protected and owners know they’ll be paid. He works alongside Jadesola so every outfit she approves reaches you through a smooth, trusted process.
                 </p>
               </div>
               <div className="founder-focus-tags">
@@ -130,7 +130,7 @@ export default function AboutPage() {
           <div className="founders-together-box">
             <span className="together-label">Together</span>
             <p className="together-text">
-              Jadesola brings the style and standards. Samuel brings the systems and trust. We started OwanbeFit so you can look your best at every owambe without buying an outfit you’ll wear once.
+              Jadesola brings the style and standards. Samuel brings the systems and trust. We started owambeFit so you can look your best at every owambe without buying an outfit you’ll wear once.
             </p>
           </div>
         </div>

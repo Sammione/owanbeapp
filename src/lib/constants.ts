@@ -28,6 +28,18 @@ export const CATEGORIES = [
   "Small Chops & Finger Foods",
   "Cocktails & Drinks Bar",
   "Event Ushers & Protocol",
+  // Official owambeFit Custom Souvenirs (Fulfilled by owambeFit)
+  "Thermal Tumblers & Drinkware",
+  "Luxury Hand Fans & Parasols",
+  "Jute Totes & Ankara Gift Bags",
+  "Kitchenware & Dining Keepsakes",
+] as const;
+
+export const SOUVENIR_CATEGORIES = [
+  "Thermal Tumblers & Drinkware",
+  "Luxury Hand Fans & Parasols",
+  "Jute Totes & Ankara Gift Bags",
+  "Kitchenware & Dining Keepsakes",
 ] as const;
 
 export const EQUIPMENT_CATEGORIES = [
@@ -121,10 +133,22 @@ export function isServiceCategory(category?: string | null): boolean {
   return (SERVICE_CATEGORIES as readonly string[]).includes(category);
 }
 
+export function isSouvenirCategory(category?: string | null): boolean {
+  if (!category) return false;
+  return (SOUVENIR_CATEGORIES as readonly string[]).includes(category);
+}
+
 export function isFashionCategory(category?: string | null): boolean {
   if (!category) return true;
   return (FASHION_CATEGORIES as readonly string[]).includes(category);
 }
+
+export const SOUVENIR_PACK_SIZES = [
+  "Pack of 50 Units",
+  "Pack of 100 Units",
+  "Pack of 200 Units",
+  "Pack of 500 Units",
+] as const;
 
 export const EU_SHOE_SIZES = [
   "EU 36 (UK 3)",

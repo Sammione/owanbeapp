@@ -11,8 +11,10 @@ import {
   VENUE_CATEGORIES,
   EQUIPMENT_CATEGORIES,
   SERVICE_CATEGORIES,
+  SOUVENIR_CATEGORIES,
 } from "@/lib/constants";
 import { DEMO_VENUES } from "@/lib/demo-venues";
+import { DEMO_SOUVENIRS } from "@/lib/demo-souvenirs";
 
 type SP = Promise<{
   q?: string;
@@ -25,9 +27,10 @@ type SP = Promise<{
 }>;
 
 const PILLARS = [
-  { id: "all", label: "All Rentals" },
+  { id: "all", label: "All Essentials" },
   { id: "venues", label: "Halls & Venues" },
   { id: "fashion", label: "Attire & Footwear" },
+  { id: "souvenirs", label: "Custom Souvenirs (by owambeFit)" },
   { id: "equipment", label: "Event Equipment" },
   { id: "services", label: "Catering & Services" },
 ] as const;
@@ -40,7 +43,7 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
   const area = AREAS.includes(sp.area as (typeof AREAS)[number]) ? sp.area! : "Ikotun";
   const category = CATEGORIES.includes(sp.category as (typeof CATEGORIES)[number]) ? sp.category! : "";
   const color = COLORS.find((c) => c.value === sp.color)?.value ?? "";
-  const pillar = (["all", "venues", "fashion", "equipment", "services"] as const).includes(sp.pillar as any)
+  const pillar = (["all", "venues", "fashion", "souvenirs", "equipment", "services"] as const).includes(sp.pillar as any)
     ? sp.pillar!
     : "";
 
@@ -62,6 +65,8 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
     query = query.in("category", [...SERVICE_CATEGORIES]);
   } else if (pillar === "fashion") {
     query = query.in("category", [...FASHION_CATEGORIES]);
+  } else if (pillar === "souvenirs") {
+    query = query.in("category", [...SOUVENIR_CATEGORIES]);
   }
 
   if (event) query = query.contains("events", [event]);
@@ -110,7 +115,20 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
     return true;
   });
 
-  const items = [...dbItems, ...matchingDemoVenues]
+  const matchingDemoSouvenirs = DEMO_SOUVENIRS.filter((s) => {
+    if (pillar && pillar !== "all" && pillar !== "souvenirs") return false;
+    if (category && s.category !== category) return false;
+    if (event && !s.events.includes(event)) return false;
+    if (q) {
+      const needle = q.toLowerCase();
+      if (!s.title.toLowerCase().includes(needle) && !(s.description ?? "").toLowerCase().includes(needle)) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  const items = [...dbItems, ...matchingDemoVenues, ...matchingDemoSouvenirs]
     .sort((a, b) => Number(b.hub_area === area) - Number(a.hub_area === area));
 
   const link = (patch: Record<string, string>) => {
@@ -137,6 +155,11 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
       { name: "All Halls & Venues", query: "" },
       ...VENUE_CATEGORIES.map((c) => ({ name: c, query: c })),
     ];
+  } else if (pillar === "souvenirs") {
+    activeCategoryLinks = [
+      { name: "All Custom Souvenirs", query: "" },
+      ...SOUVENIR_CATEGORIES.map((c) => ({ name: c, query: c })),
+    ];
   } else if (pillar === "equipment") {
     activeCategoryLinks = [
       { name: "All Equipment", query: "" },
@@ -155,8 +178,8 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
   } else {
     activeCategoryLinks = [
       { name: "All Collections", query: "" },
+      { name: "Custom Souvenirs", query: "Thermal Tumblers & Drinkware" },
       { name: "Halls & Marquees", query: "Event Halls & Marquees" },
-      { name: "Garden Venues", query: "Garden & Outdoor Venues" },
       { name: "Aso-ebi / Lace", query: "Aso-ebi / lace" },
       { name: "Agbada", query: "Agbada" },
       { name: "Shoes & Footwear", query: "Shoes & Footwear" },
@@ -164,8 +187,6 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
       { name: "Cooking Pots & Burners", query: "Cooking Pots & Burners" },
       { name: "Party Catering & Jollof", query: "Party Catering & Jollof" },
       { name: "Chafing Dishes", query: "Chafing Dishes & Food Warmers" },
-      { name: "Canopies & Chairs", query: "Canopies, Tables & Chairs" },
-      { name: "Cocktails & Bar", query: "Cocktails & Drinks Bar" },
     ];
   }
 
@@ -491,7 +512,7 @@ export default async function Home({ searchParams }: { searchParams: SP }) {
       <section className="standard-section">
         <div className="standard-header">
           <span className="hero-kicker">How It Works</span>
-          <h2>The OwanbeFit standard</h2>
+          <h2>The owambeFit standard</h2>
           <p className="muted">
             High-end traditional attire rented directly between verified wardrobe owners and party guests in Lagos.
           </p>

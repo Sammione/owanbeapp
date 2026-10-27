@@ -328,7 +328,7 @@ function HallLoginInner() {
       {/* New Hall Registration Prompt */}
       <div className="box" style={{ marginTop: 20, textAlign: "center", background: "rgba(255, 255, 255, 0.02)" }}>
         <strong style={{ fontSize: 15, display: "block", marginBottom: 4 }}>
-          Don't have an OwanbeFit Venue account yet?
+          Don't have an owambeFit Venue account yet?
         </strong>
         <p className="tiny muted" style={{ margin: "0 0 12px" }}>
           Get listed across Lagos with 5 photos, verified badge, and direct WhatsApp inquiries. First 30 days are 100% free.

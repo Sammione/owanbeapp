@@ -1,5 +1,5 @@
 export type Grade = "A" | "B" | "C";
-export type ItemType = "garment" | "equipment" | "service" | "venue";
+export type ItemType = "garment" | "equipment" | "service" | "venue" | "souvenir";
 
 export type Item = {
   id: string;

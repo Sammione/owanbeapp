@@ -11,7 +11,7 @@ import { SupportWidget } from "@/components/SupportWidget";
 import { ReferralBanner } from "@/components/ReferralBanner";
 
 export const metadata: Metadata = {
-  title: "OwanbeFit – Luxury Traditional Attire Rental | Lagos",
+  title: "owambeFit – Luxury Traditional Attire Rental | Lagos",
   description:
     "Rent bespoke Aso-ebi, Agbada, pre-tied Gele, and royal coral beads across Ikotun, Egbeda, and Igando. Inspected and dry-cleaned at neighborhood hubs.",
   icons: {
@@ -52,16 +52,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <ReferralBanner />
           <div className="shell">
             <header className="topbar">
-              <Link href="/" className="brand-logo" aria-label="OwanbeFit Home">
+              <Link href="/" className="brand-logo" aria-label="owambeFit Home">
                 <Image
                   src="/logo.png"
-                  alt="OwanbeFit"
+                  alt="owambeFit"
                   width={44}
                   height={44}
                   className="brand-logo-img"
                   priority
                 />
-                <span className="brand-name">OWANBEFIT</span>
+                <span className="brand-name">owambeFit</span>
               </Link>
 
               <TopLinks signedIn={!!user} staff={staff} />
@@ -85,10 +85,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <footer className="luxury-footer">
             <div className="footer-top">
               <div className="footer-brand">
-                <Link href="/" className="footer-logo-link" aria-label="OwanbeFit Home">
+                <Link href="/" className="footer-logo-link" aria-label="owambeFit Home">
                   <Image
                     src="/logo.png"
-                    alt="OwanbeFit"
+                    alt="owambeFit"
                     width={80}
                     height={80}
                     className="footer-logo-img"
@@ -116,6 +116,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   <Link href="/?pillar=equipment&category=Cooking+Pots+%26+Burners">Cast-Iron Party Pots</Link>
                   <Link href="/?pillar=services&category=Party+Catering+%26+Jollof">Party Catering & Jollof</Link>
                   <Link href="/?pillar=equipment&category=Chafing+Dishes+%26+Food+Warmers">Chafing Dishes</Link>
+                  <Link href="/?pillar=souvenirs" style={{ color: "var(--accent-gold, #D4AF37)", fontWeight: 600 }}>Custom Souvenirs (by owambeFit)</Link>
                 </div>
                 <div className="footer-col">
                   <h4>Partners & Vendors</h4>
@@ -138,7 +139,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
             <div className="footer-bottom">
               <span className="copyright">
-                © {new Date().getFullYear()} OwanbeFit. Lagos, Nigeria.
+                © {new Date().getFullYear()} owambeFit. Lagos, Nigeria.
               </span>
               <span className="paystack-badge">
                 Payments & Automated Refunds powered by Paystack

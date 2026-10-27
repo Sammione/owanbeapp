@@ -255,7 +255,7 @@ export function ListingForm({
 
       let computedDesc = f.description.trim() || null;
       if (isVenue) {
-        computedDesc = `${computedDesc ? computedDesc + "\n\n" : ""}📍 Address: ${venueAddress || "Lagos"}\n📞 WhatsApp: ${venueWhatsApp || "Direct via OwanbeFit"}\n✨ Amenities: ${venueAmenities.join(", ")}`;
+        computedDesc = `${computedDesc ? computedDesc + "\n\n" : ""}📍 Address: ${venueAddress || "Lagos"}\n📞 WhatsApp: ${venueWhatsApp || "Direct via owambeFit"}\n✨ Amenities: ${venueAmenities.join(", ")}`;
       }
 
       const { error } = await supabase.from("items").insert({

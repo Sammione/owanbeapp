@@ -6,8 +6,10 @@ import {
   isVenueCategory,
   isEquipmentCategory,
   isServiceCategory,
+  isSouvenirCategory,
 } from "@/lib/constants";
 import { DEMO_VENUES } from "@/lib/demo-venues";
+import { DEMO_SOUVENIRS } from "@/lib/demo-souvenirs";
 import { naira, niceDate } from "@/lib/format";
 import type { Item, Hub } from "@/lib/types";
 import { Icon } from "@/components/Icon";
@@ -31,7 +33,8 @@ export default async function ItemPage({
   const { supabase, user, profile } = await getUserAndProfile();
 
   const demoVenue = DEMO_VENUES.find((v) => v.id === id);
-  let item = demoVenue as Item | null;
+  const demoSouvenir = DEMO_SOUVENIRS.find((s) => s.id === id);
+  let item = (demoVenue || demoSouvenir) as Item | null;
   if (!item) {
     const { data } = await supabase.from("items").select("*").eq("id", id).maybeSingle<Item>();
     item = data;
@@ -41,13 +44,17 @@ export default async function ItemPage({
   const [{ data: owner }, { data: hub }, { data: busy }, saved] = await Promise.all([
     demoVenue
       ? Promise.resolve({ data: { first_name: "Verified Venue Partner", area: demoVenue.hub_area } })
+      : demoSouvenir
+      ? Promise.resolve({ data: { first_name: "owambeFit In-House Production", area: "All Lagos Zones" } })
       : supabase.from("owner_public").select("first_name,area").eq("id", item.owner_id).maybeSingle(),
     demoVenue
       ? Promise.resolve({ data: { id: "hub-venue", name: "Direct On-Site Inspection", area: demoVenue.hub_area, address: "Lagos Venue", phone: "080 3322 1100" } as Hub })
+      : demoSouvenir
+      ? Promise.resolve({ data: { id: "hub-souvenir", name: "Official owambeFit Dispatch", area: "Lagos Statewide", address: "Direct Doorstep / Venue Delivery or Hub Pickup", phone: "080 3322 1100" } as Hub })
       : item.hub_id
       ? supabase.from("hubs").select("*").eq("id", item.hub_id).maybeSingle<Hub>()
       : Promise.resolve({ data: null }),
-    demoVenue ? Promise.resolve({ data: [] }) : supabase.rpc("item_busy_ranges", { p_item: item.id }),
+    demoVenue || demoSouvenir ? Promise.resolve({ data: [] }) : supabase.rpc("item_busy_ranges", { p_item: item.id }),
     user ? supabase.from("saved").select("item_id").eq("user_id", user.id).eq("item_id", item.id).maybeSingle() : Promise.resolve({ data: null }),
   ]);
 
@@ -144,7 +151,7 @@ export default async function ItemPage({
             <div className="stack" style={{ flex: 1 }}>
               <div className="row g6" style={{ alignItems: "center" }}>
                 <strong className="small">
-                  {isOwner ? "Your Listing (Private Wardrobe)" : "Verified OwanbeFit Partner · Lagos"}
+                  {isOwner ? "Your Listing (Private Wardrobe)" : "Verified owambeFit Partner · Lagos"}
                 </strong>
               </div>
               <span className="muted tiny">
@@ -277,7 +284,7 @@ export default async function ItemPage({
                   <span style={{ color: "var(--grade-a, #165337)" }}>Paystack Escrow Protection</span>
                 </div>
                 <p className="tqc-desc" style={{ color: "var(--ink-secondary)" }}>
-                  Your payment is safely held by OwanbeFit. The caterer / vendor is only paid after your event is successfully delivered to your satisfaction.
+                  Your payment is safely held by owambeFit. The caterer / vendor is only paid after your event is successfully delivered to your satisfaction.
                 </p>
               </div>
             </div>
@@ -324,10 +331,54 @@ export default async function ItemPage({
             </div>
           )}
 
+          {/* Official owambeFit Custom Souvenir Fulfillment Specifications */}
+          {isSouvenirCategory(item.category) && (
+            <div className="measurement-box" style={{ borderColor: "rgba(212, 175, 55, 0.4)" }}>
+              <div className="row between">
+                <div className="row g8" style={{ alignItems: "center" }}>
+                  <Icon name="sparkles" size={20} stroke={2} />
+                  <h3 style={{ margin: 0 }}>Official owambeFit Fulfillment</h3>
+                </div>
+                <span className="tiny" style={{ background: "linear-gradient(135deg, #967022 0%, #D4AF37 100%)", color: "#000", fontWeight: 700, padding: "3px 10px", borderRadius: 4 }}>
+                  Direct From owambeFit
+                </span>
+              </div>
+              <div className="grid2" style={{ gap: 10, marginTop: 10 }}>
+                <div className="field box" style={{ padding: 12 }}>
+                  <span className="tiny muted">Package Quantity</span>
+                  <strong style={{ fontSize: 16 }}>{item.size_label || "Custom Units Batch"}</strong>
+                </div>
+                <div className="field box" style={{ padding: 12 }}>
+                  <span className="tiny muted">Customization Proof</span>
+                  <strong style={{ fontSize: 16 }}>Approved via WhatsApp</strong>
+                </div>
+              </div>
+              <div className="grid2" style={{ gap: 10, marginTop: 10 }}>
+                <div className="field box" style={{ padding: 12 }}>
+                  <span className="tiny muted">Production Turnaround</span>
+                  <strong style={{ fontSize: 15 }}>5 - 7 Business Days</strong>
+                </div>
+                <div className="field box" style={{ padding: 12 }}>
+                  <span className="tiny muted">Delivery / Dispatch</span>
+                  <strong style={{ fontSize: 15 }}>Direct to Venue or Hub</strong>
+                </div>
+              </div>
+              <div className="tailor-quality-card" style={{ marginTop: 10, background: "rgba(212, 175, 55, 0.08)", borderColor: "rgba(212, 175, 55, 0.3)" }}>
+                <div className="tqc-title">
+                  <span style={{ color: "var(--accent-gold, #D4AF37)" }}>100% Quality &amp; Branding Guarantee</span>
+                </div>
+                <p className="tqc-desc" style={{ color: "var(--ink-secondary)" }}>
+                  Produced, branded, and packaged directly by the owambeFit team. No random third-party vendors. A high-resolution digital 3D proof is sent to you on WhatsApp for approval before mass production.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Tailor Measurements for Garments */}
           {!isVenueCategory(item.category) &&
             !isEquipmentCategory(item.category) &&
             !isServiceCategory(item.category) &&
+            !isSouvenirCategory(item.category) &&
             item.category !== "Shoes & Footwear" &&
             measures.length > 0 && (
             <div className="measurement-box">
