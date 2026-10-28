@@ -146,44 +146,57 @@ function LoginInner() {
   return (
     <div className="container narrow" style={{ maxWidth: 480 }}>
       {/* 1-Click Demo Testing Hub Card */}
-      <div className="box" style={{ background: "rgba(212, 175, 55, 0.08)", borderColor: "rgba(212, 175, 55, 0.35)", marginBottom: 24 }}>
+      {/* 1-Click Demo Testing Hub Card */}
+      <div
+        className="box"
+        style={{
+          background: "var(--bg-subtle)",
+          border: "1px solid var(--border)",
+          borderRadius: "var(--radius-lg, 12px)",
+          padding: 16,
+          marginBottom: 24,
+        }}
+      >
         <div className="row between" style={{ alignItems: "center", marginBottom: 8 }}>
-          <strong style={{ fontSize: "0.95rem", color: "var(--gold)" }}>Direct Test Accounts</strong>
+          <strong style={{ fontSize: "0.95rem", color: "var(--accent-gold, #D4AF37)", letterSpacing: "0.02em" }}>Direct Test Accounts</strong>
           <span className="pill ok" style={{ fontSize: "0.75rem" }}>Instant Access</span>
         </div>
-        <p className="small muted" style={{ margin: "0 0 12px" }}>
+        <p className="small muted" style={{ margin: "0 0 14px", color: "var(--ink-secondary)" }}>
           Select any persona to test the platform immediately:
         </p>
 
-        <div className="stack g8">
+        <div className="stack g10">
           {DEMO_PERSONAS.map((p) => {
             const isLoggingIn = demoLoading === p.email;
             return (
               <div
                 key={p.email}
                 style={{
-                  background: "var(--card-bg, #ffffff)",
+                  background: "var(--bg-elevated)",
                   border: "1px solid var(--border)",
-                  borderRadius: 8,
-                  padding: "10px 12px",
+                  borderRadius: "var(--radius-md, 8px)",
+                  padding: "12px 14px",
                   display: "flex",
                   flexDirection: "column",
-                  gap: 6,
+                  gap: 8,
+                  boxShadow: "var(--shadow-subtle)",
                 }}
               >
                 <div className="row between" style={{ alignItems: "center" }}>
-                  <strong>{p.roleTitle}</strong>
+                  <strong style={{ color: "var(--ink)", fontSize: "0.92rem" }}>{p.roleTitle}</strong>
                   <span className={`pill small ${p.badgeTone}`}>{p.badge}</span>
                 </div>
-                <p className="small muted" style={{ margin: 0 }}>{p.desc}</p>
+                <p className="small muted" style={{ margin: 0, color: "var(--ink-secondary)", lineHeight: 1.45 }}>{p.desc}</p>
                 <div className="row between" style={{ alignItems: "center", marginTop: 4 }}>
-                  <code style={{ fontSize: "0.78rem", color: "var(--muted)" }}>{p.email}</code>
+                  <code style={{ fontSize: "0.78rem", color: "var(--ink-muted)", background: "var(--bg-inset)", padding: "2px 8px", borderRadius: 4 }}>
+                    {p.email}
+                  </code>
                   <button
                     type="button"
-                    className="btn small"
+                    className="btn small ghost"
                     disabled={loading || !!demoLoading}
                     onClick={() => triggerDemoLogin(p)}
-                    style={{ whiteSpace: "nowrap" }}
+                    style={{ whiteSpace: "nowrap", height: 32, fontSize: "0.82rem", fontWeight: 600 }}
                   >
                     {isLoggingIn ? "Signing in…" : "Sign in →"}
                   </button>
@@ -193,16 +206,26 @@ function LoginInner() {
           })}
         </div>
 
-        <details style={{ marginTop: 12, fontSize: "0.82rem" }}>
-          <summary style={{ cursor: "pointer", color: "var(--gold)", fontWeight: 600 }}>
+        <details style={{ marginTop: 14, fontSize: "0.82rem" }}>
+          <summary style={{ cursor: "pointer", color: "var(--accent-gold, #D4AF37)", fontWeight: 600 }}>
             Show demo passwords & credentials
           </summary>
-          <div style={{ marginTop: 8, padding: 8, background: "rgba(0,0,0,0.03)", borderRadius: 6 }} className="stack g4">
-            <div><strong>Admin:</strong> <code>admin@owanbefit.com</code> · Pass: <code>OwambeAdmin2026!</code></div>
-            <div><strong>Borrower:</strong> <code>borrower@owanbefit.com</code> · Pass: <code>OwambeBorrower2026!</code></div>
-            <div><strong>Vendor:</strong> <code>vendor@owanbefit.com</code> · Pass: <code>OwambeVendor2026!</code></div>
-            <div><strong>Hall Manager:</strong> <code>hallowner@owanbefit.com</code> · Pass: <code>OwambeHall2026!</code></div>
-            <div><strong>Owner Admin:</strong> <code>sammione531@gmail.com</code> · Pass: <code>OwambeAdmin2026!</code></div>
+          <div
+            style={{
+              marginTop: 8,
+              padding: 10,
+              background: "var(--bg-inset)",
+              border: "1px solid var(--border)",
+              borderRadius: 6,
+              color: "var(--ink-secondary)",
+            }}
+            className="stack g4"
+          >
+            <div><strong style={{ color: "var(--ink)" }}>Admin:</strong> <code>admin@owanbefit.com</code> · Pass: <code>OwambeAdmin2026!</code></div>
+            <div><strong style={{ color: "var(--ink)" }}>Borrower:</strong> <code>borrower@owanbefit.com</code> · Pass: <code>OwambeBorrower2026!</code></div>
+            <div><strong style={{ color: "var(--ink)" }}>Vendor:</strong> <code>vendor@owanbefit.com</code> · Pass: <code>OwambeVendor2026!</code></div>
+            <div><strong style={{ color: "var(--ink)" }}>Hall Manager:</strong> <code>hallowner@owanbefit.com</code> · Pass: <code>OwambeHall2026!</code></div>
+            <div><strong style={{ color: "var(--ink)" }}>Owner Admin:</strong> <code>sammione531@gmail.com</code> · Pass: <code>OwambeAdmin2026!</code></div>
           </div>
         </details>
       </div>
